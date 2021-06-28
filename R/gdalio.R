@@ -16,7 +16,16 @@
   if (!has_proj) stop("invalid projection")
   TRUE
 }
-.set_default_grid <- function(x) {
+
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gdalio_set_default_grid <- function(x) {
  if (missing(x)) {
    x <- .gdalio_default_grid()
  } else {
@@ -24,10 +33,27 @@
  }
  options(gdalio.default.grid = x)
 }
-.get_default_grid <- function() {
+
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gdalio_get_default_grid <- function() {
   getOption("gdalio.default.grid")
 }
- gdalio_data <- function(dsn, ...) {
-  g <- .get_default_grid()
+
+#' Title
+#'
+#' @param dsn
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gdalio_data <- function(dsn, ...) {
+  g <- gdalio_get_default_grid()
   vapour::vapour_warp_raster(dsn, extent = g$extent, dimension = g$dimension, wkt = g$projection, ...)
  }

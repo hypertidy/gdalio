@@ -1,4 +1,4 @@
 .onLoad = function(libname, pkgname) {
-  .set_default_grid()
+  gdalio_set_default_grid()
 
 }

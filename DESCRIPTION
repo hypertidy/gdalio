@@ -1,5 +1,5 @@
 Package: gdalio
-Title: What the Package Does (One Line, Title Case)
+Title: Read Data to via GDAL Warper to an Assumed Grid
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Michael D.",
@@ -13,3 +13,5 @@ Language: es
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Imports: 
+    vapour (>= 0.6.5)

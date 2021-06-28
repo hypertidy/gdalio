@@ -1,32 +1,18 @@
----
-output: github_document
-editor_options: 
-  chunk_output_type: console
----
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%"
-)
-```
 
 # gdalio
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of gdalio is to read data direct with GDAL warp, with an assumed grid specification. 
-
-
+The goal of gdalio is to read data direct with GDAL warp, with an
+assumed grid specification.
 
 ## Installation
 
-You can install the released version of gdalio from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of gdalio from
+[CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("gdalio")
@@ -34,9 +20,10 @@ install.packages("gdalio")
 
 ## Example
 
-These equivalent functions format the data into objects used by various packages. 
+These equivalent functions format the data into objects used by various
+packages.
 
-```{r example}
+``` r
 library(gdalio)
 
 
@@ -90,29 +77,50 @@ f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-o
 
 ## this source doesn't know its projection so we augment by passing that in
 plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
-raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
-terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
-plot(gdalio_im(f, source_wkt = "+proj=longlat"))
-
+#> downsample set to c(1,1)
 ```
 
-Say we don't set a grid at all, just go with default. We can't help that OISST is 0,360 but that's irrelevant. 
+<img src="man/figures/README-example-1.png" width="100%" />
 
-```{r default}
+``` r
+raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+```
 
+<img src="man/figures/README-example-2.png" width="100%" />
+
+``` r
+plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+```
+
+<img src="man/figures/README-example-3.png" width="100%" />
+
+Say we don’t set a grid at all, just go with default. We can’t help that
+OISST is 0,360 but that’s irrelevant.
+
+``` r
 gdalio_set_default_grid()
 f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst"
 plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
+```
+
+<img src="man/figures/README-default-1.png" width="100%" />
+
+``` r
 raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
 terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
-plot(gdalio_im(f, source_wkt = "+proj=longlat"))
-
-
 ```
+
+<img src="man/figures/README-default-2.png" width="100%" />
+
+``` r
+plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+```
+
+<img src="man/figures/README-default-3.png" width="100%" />
 
 Some sources
 
-```R
+``` r
 "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":anom"
-
 ```
