@@ -7,8 +7,15 @@
 gdalio_get_default_grid()
 }
 \value{
-
+grid specification (list of extent, dimension, projection)
 }
 \description{
 Title
+}
+\examples{
+gdalio_get_default_grid()
+gdalio_set_default_grid(list(extent = c(-1000, 1000, -2000, 2000), dimension = c(100, 200), projection = "+proj=longlat"))
+gdalio_get_default_grid()
+
+gdalio_set_default_grid()
 }

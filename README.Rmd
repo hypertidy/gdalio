@@ -90,7 +90,7 @@ f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-o
 
 ## this source doesn't know its projection so we augment by passing that in
 plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
-raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"), col = hcl.colors(26))
 terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
 plot(gdalio_im(f, source_wkt = "+proj=longlat"))
 
@@ -103,16 +103,22 @@ Say we don't set a grid at all, just go with default. We can't help that OISST i
 gdalio_set_default_grid()
 f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst"
 plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
-raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"), col = hcl.colors(26))
 terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
 plot(gdalio_im(f, source_wkt = "+proj=longlat"))
 
 
 ```
 
-Some sources
+Some sources, files in spData, image servers, etc. 
+
 
 ```R
 "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":anom"
 
 ```
+
+
+## Code of Conduct
+  
+Please note that the gdalio project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

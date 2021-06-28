@@ -83,17 +83,22 @@ plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
 <img src="man/figures/README-example-1.png" width="100%" />
 
 ``` r
-raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
-terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"), col = hcl.colors(26))
 ```
 
 <img src="man/figures/README-example-2.png" width="100%" />
 
 ``` r
-plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
 ```
 
 <img src="man/figures/README-example-3.png" width="100%" />
+
+``` r
+plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+```
+
+<img src="man/figures/README-example-4.png" width="100%" />
 
 Say we don’t set a grid at all, just go with default. We can’t help that
 OISST is 0,360 but that’s irrelevant.
@@ -107,20 +112,32 @@ plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
 <img src="man/figures/README-default-1.png" width="100%" />
 
 ``` r
-raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
-terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"), col = hcl.colors(26))
 ```
 
 <img src="man/figures/README-default-2.png" width="100%" />
 
 ``` r
-plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
 ```
 
 <img src="man/figures/README-default-3.png" width="100%" />
 
-Some sources
+``` r
+plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+```
+
+<img src="man/figures/README-default-4.png" width="100%" />
+
+Some sources, files in spData, image servers, etc.
 
 ``` r
 "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":anom"
 ```
+
+## Code of Conduct
+
+Please note that the gdalio project is released with a [Contributor Code
+of
+Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.

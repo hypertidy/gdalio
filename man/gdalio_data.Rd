@@ -10,8 +10,18 @@ gdalio_data(dsn, ...)
 \item{...}{}
 }
 \value{
-
+list of numeric vectors
 }
 \description{
 Title
+}
+\examples{
+\dontrun{
+ f <- system.file("extdata/sst.tif", package = "vapour", mustWork = TRUE)
+
+ g <- list(extent = c(130, 160, -60, -30), dimension = c(180, 100), projection = "+proj=longlat")
+ gdalio_set_default_grid(g)
+ v <- gdalio_data(f)
+ image(seq(130, 160, length.out = 181), seq(-60, -30, length.out = 101), matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1], asp = 1.5)
+}
 }

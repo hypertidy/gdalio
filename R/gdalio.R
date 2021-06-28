@@ -19,12 +19,14 @@
 
 #' Title
 #'
-#' @param x
+#' @param x optional grid specification
 #'
-#' @return
+#' @return nothing, used to set a default grid available globally
 #' @export
 #'
 #' @examples
+#' gdalio_set_default_grid(list(extent = c(-1000, 1000, -2000, 2000), dimension = c(100, 200), projection = "+proj=longlat"))
+#' gdalio_set_default_grid()
 gdalio_set_default_grid <- function(x) {
  if (missing(x)) {
    x <- .gdalio_default_grid()
@@ -36,10 +38,15 @@ gdalio_set_default_grid <- function(x) {
 
 #' Title
 #'
-#' @return
+#' @return grid specification (list of extent, dimension, projection)
 #' @export
 #'
 #' @examples
+#' gdalio_get_default_grid()
+#' gdalio_set_default_grid(list(extent = c(-1000, 1000, -2000, 2000), dimension = c(100, 200), projection = "+proj=longlat"))
+#' gdalio_get_default_grid()
+#'
+#' gdalio_set_default_grid()
 gdalio_get_default_grid <- function() {
   getOption("gdalio.default.grid")
 }
@@ -49,10 +56,18 @@ gdalio_get_default_grid <- function() {
 #' @param dsn
 #' @param ...
 #'
-#' @return
+#' @return list of numeric vectors
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#'  f <- system.file("extdata/sst.tif", package = "vapour", mustWork = TRUE)
+#'
+#'  g <- list(extent = c(130, 160, -60, -30), dimension = c(180, 100), projection = "+proj=longlat")
+#'  gdalio_set_default_grid(g)
+#'  v <- gdalio_data(f)
+#'  image(seq(130, 160, length.out = 181), seq(-60, -30, length.out = 101), matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1], asp = 1.5)
+#' }
 gdalio_data <- function(dsn, ...) {
   g <- gdalio_get_default_grid()
   vapour::vapour_warp_raster(dsn, extent = g$extent, dimension = g$dimension, wkt = g$projection, ...)
