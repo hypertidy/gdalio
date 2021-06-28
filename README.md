@@ -272,6 +272,25 @@ contour(setValues(o, xy[,2]), add = TRUE, col = "white")
 
 <img src="man/figures/README-omerc-1.png" width="100%" />
 
+The fun part is I can now change the source, I’ve already set up the map
+I want and I can simply ask for a new set of pixels. The topography data
+happens to be in Mercator from a tiled and level of detail image
+service, while the SST is from a model output format (NetCDF) at a
+single resolution. GDAL doesn’t care! Let’s make them the same:
+
+``` r
+sst <- gdalio_raster(f, source_wkt = "+proj=longlat")
+#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj
+#> = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4
+#> definition
+raster::plot(sst, col = palr::sst_pal(26))
+contour(setValues(o, xy[,1]), add = TRUE, col = "white")
+contour(setValues(o, xy[,2]), add = TRUE, col = "white")
+contour(o, add = TRUE, labels = "", col = "black", levels = seq(0, 4500, by = 500))
+```
+
+<img src="man/figures/README-netcdf-1.png" width="100%" />
+
 ## Code of Conduct
 
 Please note that the gdalio project is released with a [Contributor Code
