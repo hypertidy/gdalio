@@ -20,8 +20,59 @@ install.packages("gdalio")
 
 ## Example
 
+At root, what we’re talking about is having a *target grid*, we nominate
+it upfront and then any data we request from GDAL will *fill that grid*
+by GDAL’s warp magic.
+
+So
+
+``` r
+library(gdalio)
+## we set up a grid (this is a *raster* in abstraction)
+gdalio_set_default_grid(list(extent = c(-1e6, 1e6, -5e5, 5e5 ), 
+                             dimension = c(1018, 512), 
+                             projection = "+proj=laea +lon_0=147 +lat_0=-42"))
+
+## this data's available online, it's a daily ocean temperature surface product, this is one layer in longlat for the entire globe at 0.25 degree res
+f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst"
+
+## then we get GDAL to get a value for every pixel in our grid
+pix <- gdalio_data(f, source_wkt = "+proj=longlat")  ## source doesn't know its crs, so we have to add here (WIP)
+
+## we have a list vector for each band (just one here)
+plot(pix[[1]], pch = ".")
+```
+
+<img src="man/figures/README-warp-1.png" width="100%" />
+
+Normally of course we want a bit more convenience, and actually fill a
+format in R or some package that has spatial types. So we define those
+helpers here.
+
 These equivalent functions format the data into objects used by various
 packages.
+
+``` r
+## simple list format used by graphics::image() - we can only handle one band/layer
+gdalio_base <- function(dsn, ...) {
+   v <- gdalio_data(dsn, ...)
+   g <- gdalio_get_default_grid()
+   list(x = seq(g$extent[1], g$extent[2], length.out = g$dimension[1]), 
+        y = seq(g$extent[3], g$extent[4], length.out = g$dimension[2]), 
+        z = matrix(v[[1]], g$dimension[1])[, g$dimension[2]:1])
+}
+```
+
+R for a long time had a powerful list(x,y,z) format for `image()`:
+
+``` r
+xyz <- gdalio_base(f, source_wkt = "+proj=longlat")
+image(xyz)
+```
+
+<img src="man/figures/README-image-1.png" width="100%" />
+
+And now a bunch of other types also exist.
 
 ``` r
 ## spatstat
@@ -180,6 +231,46 @@ library(stars); plot(s)
 ```
 
 <img src="man/figures/README-example-data-1.png" width="100%" />
+
+``` r
+
+## we can do this anywhere, in any projection but it depends on what our source *has* of course
+## but, it's pretty general and powerful
+gdalio_set_default_grid(list(extent = c(-1, 1, -1, 1) * 3e6, 
+                             dimension = c(768, 813), 
+                             projection = "+proj=stere +lat_0=-65 +lon_0=147"))
+p <- gdalio_im(elevation.tiles.prod)
+plot(p)
+```
+
+<img src="man/figures/README-example-data-2.png" width="100%" />
+
+My favourite projection family (I think) is Oblique Mercator. For a long
+time I’ve wanted this kind of freedom and convenience for working with
+spatial data … rather than constantly juggling objects and formats and
+plumbing, more to come. :)
+
+``` r
+omerc <- "+proj=omerc +lonc=147 +gamma=9 +alpha=9 +lat_0=-10 +ellps=WGS84"
+
+gdalio_set_default_grid(list(extent = c(-1, 1, -1, 1) * 7e6, 
+                             dimension = c(768, 813), 
+                             projection = omerc))
+
+o <- gdalio_raster(elevation.tiles.prod)
+#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj
+#> = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4
+#> definition
+raster::plot(o, col = hcl.colors(52))
+xy <- reproj::reproj(raster::coordinates(o), "+proj=longlat", source = raster::projection(o))
+xy[xy[,1] < 0, 1] <- xy[xy[,1] < 0, 1] + 360
+library(raster)
+#> Loading required package: sp
+contour(raster::setValues(o, xy[,1]), add = TRUE, col = "white")
+contour(setValues(o, xy[,2]), add = TRUE, col = "white")
+```
+
+<img src="man/figures/README-omerc-1.png" width="100%" />
 
 ## Code of Conduct
 
