@@ -1,12 +1,18 @@
 Package: gdalio
 Title: Read Data to via GDAL Warper to an Assumed Grid
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: 
     person(given = "Michael D.",
            family = "Sumner",
            role = c("aut", "cre"),
            email = "mdsumner@gmail.com")
-Description: What the package does (one paragraph).
+Description: Convenience wrapper for the GDAL raster warper library. Set a default context grid, an extent, 
+ dimension, projection, and then read any GDAL raster source into that grid. There are controls to augment
+ metadata-poor sources (to override missing or incorrect extent or projection metadata), to set a desired grid
+ for subsequent use, and ability to control options available by the GDAL warp library itself. This can be 
+ used to easily read data from any kind of raster data source, local files, online servers, bare URLs, and database
+ connections. Data is read in generic form but we provide example wrappers for commonly used formats for raster
+ data. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Language: es
@@ -14,4 +20,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
+    methods,
     vapour (>= 0.6.5)
+URL: https://github.com/hypertidy/gdalio
+BugReports: https://github.com/hypertidy/gdalio/issues

@@ -16,6 +16,7 @@ nothing, used to set a default grid available globally
 Title
 }
 \examples{
-gdalio_set_default_grid(list(extent = c(-1000, 1000, -2000, 2000), dimension = c(100, 200), projection = "+proj=longlat"))
+gdalio_set_default_grid(list(extent = c(-1000, 1000, -2000, 2000),
+   dimension = c(100, 200), projection = "+proj=longlat"))
 gdalio_set_default_grid()
 }

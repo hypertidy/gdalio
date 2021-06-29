@@ -9,13 +9,39 @@
 The goal of gdalio is to read data direct with GDAL warp, with an
 assumed grid specification.
 
+We have these functions to easily read raster data via the GDAL warp
+library:
+
+-   `gdalio_data()` read data directly from a *data source name*
+    i.e. file path, url, or database connection
+-   `gdalio_set_default_grid()` specify a grid (extent, dimension,
+    projection) to use for all subsequent operations
+-   `gdalio_get_default_grid()` get the grid currently in use
+-   `vrt()` simple function to *augment* data sources that have missing
+    or incorrect *extent* or *projection* metadata
+
+In this readme we illustrate the use of these from some online and local
+raster data sources, and provide helpers for reading into particular
+formats used in R (base matrix, raster package, stars package, spatstat
+package, terra package).
+
+TODO:
+
+-   [ ] we need to be able to revert to the native grid of a source :)
+-   [ ] be able to set a default grid for general use, or have helpers
+    of them
+-   [ ] do we automatically read all bands if not specified, or find the
+    special cases 1, 2, 4?
+
 ## Installation
 
-You can install the released version of gdalio from
-[CRAN](https://CRAN.R-project.org) with:
+You can install gdalio from
+[Github](https://github.com/hypertidy/gdalio) with:
 
 ``` r
-install.packages("gdalio")
+#install.packages("remotes")
+#install.packages("vapour)
+remotes::install_github("hypertidy/gdalio")
 ```
 
 ## Example
@@ -24,26 +50,50 @@ At root, what we’re talking about is having a *target grid*, we nominate
 it upfront and then any data we request from GDAL will *fill that grid*
 by GDAL’s warp magic.
 
-So
+This works best for data you have access to locally, nice examples are
+available but require a bit of prep. We have a sea surface temperature
+data set, we need GDAL’s subdataset syntax for a file at a URL and
+*augment* our file address with what we know is the projection of the
+data.
 
 ``` r
 library(gdalio)
+
+## online data, daily ocean temperature surface product, one layer in longlat 0.25 degree res
+f <- vrt("NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst", 
+         projection = "+proj=longlat +datum=WGS84")
+```
+
+Now, we can set up the grid for the window of data we want and start
+reading.
+
+``` r
 ## we set up a grid (this is a *raster* in abstraction)
-gdalio_set_default_grid(list(extent = c(-1e6, 1e6, -5e5, 5e5 ), 
-                             dimension = c(1018, 512), 
-                             projection = "+proj=laea +lon_0=147 +lat_0=-42"))
+grid0 <- list(extent = c(-1e6, 1e6, -5e5, 5e5 ), 
+                             dimension = c(512, 256), 
+                             projection = "+proj=laea +lon_0=147 +lat_0=-42")
+gdalio_set_default_grid(grid0)
+```
 
-## this data's available online, it's a daily ocean temperature surface product, this is one layer in longlat for the entire globe at 0.25 degree res
-f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst"
+And now start reading data.
 
+``` r
 ## then we get GDAL to get a value for every pixel in our grid
-pix <- gdalio_data(f, source_wkt = "+proj=longlat")  ## source doesn't know its crs, so we have to add here (WIP)
-
+pix <- gdalio_data(f)  
 ## we have a list vector for each band (just one here)
 plot(pix[[1]], pch = ".")
 ```
 
 <img src="man/figures/README-warp-1.png" width="100%" />
+
+``` r
+## those look a little simplified (it's because we are asking for quite high resolution from a low resolution source)
+pix_interp <- gdalio_data(f, resample = "bilinear")  
+## use resampling we get quite a different result
+plot(pix_interp[[1]], pch = ".")
+```
+
+<img src="man/figures/README-warp-2.png" width="100%" />
 
 Normally of course we want a bit more convenience, and actually fill a
 format in R or some package that has spatial types. So we define those
@@ -66,13 +116,13 @@ gdalio_base <- function(dsn, ...) {
 R for a long time had a powerful list(x,y,z) format for `image()`:
 
 ``` r
-xyz <- gdalio_base(f, source_wkt = "+proj=longlat")
+xyz <- gdalio_base(f)
 image(xyz)
 ```
 
 <img src="man/figures/README-image-1.png" width="100%" />
 
-And now a bunch of other types also exist.
+And now there are a bunch of other types for rasters.
 
 ``` r
 ## spatstat
@@ -97,7 +147,6 @@ gdalio_raster <- function(dsn, ...) {
 }
 
 ## terra
-
 gdalio_terra <- function(dsn, ...) {
    v <- gdalio_data(dsn, ...)
    g <- gdalio_get_default_grid()
@@ -107,7 +156,6 @@ gdalio_terra <- function(dsn, ...) {
 }
 
 ## stars
-
 gdalio_stars <- function(dsn, ...) {
    v <- gdalio_data(dsn, ...)
    g <- gdalio_get_default_grid()
@@ -121,64 +169,98 @@ gdalio_stars <- function(dsn, ...) {
 }
 ```
 
-``` r
-library(gdalio)
-
-
-
-gdalio_set_default_grid(list(extent = c(-1e6, 1e6, -5e5, 5e5 ), dimension = c(1018, 512), projection = "+proj=laea +lon_0=147 +lat_0=-42"))
-f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst"
-
-## this source doesn't know its projection so we augment by passing that in
-plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
-#> downsample set to c(1,1)
-```
-
-<img src="man/figures/README-example-1.png" width="100%" />
+To prove the point we now read the same data but into our format of
+choice. We are *re-reading* data here (it all exists in `pix` above, but
+you get the idea).
 
 ``` r
-raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"), col = hcl.colors(26))
+op <- par(mfrow = c(2, 2))
+#plot(matrix(g$extent, ncol = 2), type = "n", asp = 1, xlab = "x", ylab = "y", main = "stars")
+image(gdalio_stars(f), main = "stars")
+raster::plot(gdalio_raster(f), col = hcl.colors(26), main = "raster")
+terra::plot(gdalio_terra(f), main = "terra")
+plot(gdalio_im(f), main = "\nspatstat")
 ```
 
-<img src="man/figures/README-example-2.png" width="100%" />
+<img src="man/figures/README-example1-1.png" width="100%" />
 
 ``` r
-terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+par(op)
 ```
 
-<img src="man/figures/README-example-3.png" width="100%" />
+In the same way, we can also use different methods of resampling and
+easily see the effect.
 
 ``` r
-plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+op <- par(mfrow = c(2, 1))
+image(gdalio_stars(f, resample = "cubicspline"), col = hcl.colors(26))
+raster::plot(gdalio_raster(f, resample = "lanczos"), col = hcl.colors(26))
 ```
 
-<img src="man/figures/README-example-4.png" width="100%" />
+<img src="man/figures/README-example-resample-1.png" width="100%" />
 
-Say we don’t set a grid at all, just go with default. We can’t help that
-OISST is 0,360 but that’s irrelevant.
+``` r
+par(op)
+```
+
+## Imagery
+
+This works as well for online image sources that present in photo form.
+
+``` r
+virtualearth_imagery <- tempfile(fileext = ".xml")
+writeLines('<GDAL_WMS>
+  <Service name="VirtualEarth">
+    <ServerUrl>http://a${server_num}.ortho.tiles.virtualearth.net/tiles/a${quadkey}.jpeg?g=90</ServerUrl>
+  </Service>
+  <MaxConnections>4</MaxConnections>
+  <Cache/>
+</GDAL_WMS>', virtualearth_imagery)
+
+img <- gdalio_raster(virtualearth_imagery)
+raster::plotRGB(img)
+```
+
+<img src="man/figures/README-imagery-1.png" width="100%" />
+
+``` r
+## let's really zoom in on somewhere cool
+grid1 <- list(extent = c(-1, 1, -1, 1) * 2e3,
+                             dimension = c(512, 512), 
+                             projection = "+proj=laea +lon_0=147.325 +lat_0=-42.880556")
+gdalio_set_default_grid(grid1)
+img <- gdalio_raster(virtualearth_imagery)
+raster::plotRGB(img)
+```
+
+<img src="man/figures/README-imagery-2.png" width="100%" />
+
+## Default grid (there is one)
+
+Say we don’t set a grid at all, just go a default.
 
 ``` r
 gdalio_set_default_grid()
-f <- "NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst"
-plot(gdalio_stars(f, source_wkt = "+proj=longlat"))
+
+image(gdalio_stars(f))
 ```
 
 <img src="man/figures/README-default-1.png" width="100%" />
 
 ``` r
-raster::plot(gdalio_raster(f, source_wkt = "+proj=longlat"), col = hcl.colors(26))
+raster::plot(gdalio_raster(f), col = hcl.colors(26))
 ```
 
 <img src="man/figures/README-default-2.png" width="100%" />
 
 ``` r
-terra::plot(gdalio_raster(f, source_wkt = "+proj=longlat"))
+terra::plot(gdalio_raster(f))
 ```
 
 <img src="man/figures/README-default-3.png" width="100%" />
 
 ``` r
-plot(gdalio_im(f, source_wkt = "+proj=longlat"))
+plot(gdalio_im(f))
 ```
 
 <img src="man/figures/README-default-4.png" width="100%" />
@@ -227,7 +309,7 @@ library(stars); plot(s)
 #> Loading required package: abind
 #> Loading required package: sf
 #> Linking to GEOS 3.9.0, GDAL 3.2.1, PROJ 7.2.1
-#> downsample set to c(2,2)
+#> downsample set to c(1,1)
 ```
 
 <img src="man/figures/README-example-data-1.png" width="100%" />
@@ -279,7 +361,7 @@ service, while the SST is from a model output format (NetCDF) at a
 single resolution. GDAL doesn’t care! Let’s make them the same:
 
 ``` r
-sst <- gdalio_raster(f, source_wkt = "+proj=longlat")
+sst <- gdalio_raster(f)
 #> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj
 #> = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4
 #> definition

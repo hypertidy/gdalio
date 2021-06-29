@@ -7,7 +7,9 @@
 gdalio_data(dsn, ...)
 }
 \arguments{
-\item{...}{}
+\item{dsn}{character string, raster source understood by GDAL}
+
+\item{...}{arguments passed to 'vapour::vapour_warp_raster'}
 }
 \value{
 list of numeric vectors
@@ -19,9 +21,11 @@ Title
 \dontrun{
  f <- system.file("extdata/sst.tif", package = "vapour", mustWork = TRUE)
 
- g <- list(extent = c(130, 160, -60, -30), dimension = c(180, 100), projection = "+proj=longlat")
+ g <- list(extent = c(130, 160, -60, -30), dimension = c(180, 100),
+    projection = "+proj=longlat")
  gdalio_set_default_grid(g)
  v <- gdalio_data(f)
- image(seq(130, 160, length.out = 181), seq(-60, -30, length.out = 101), matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1], asp = 1.5)
+ image(seq(130, 160, length.out = 181), seq(-60, -30, length.out = 101),
+    matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1], asp = 1.5)
 }
 }
