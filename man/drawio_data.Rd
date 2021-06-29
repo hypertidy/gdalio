@@ -17,3 +17,28 @@ list of numeric vectors
 \description{
 Read GDAL drawing geometry and fields data
 }
+\examples{
+library(gdalio)
+shp <- system.file("shapes/world.gpkg", package = "spData", mustWork = TRUE)
+## set a local context, a bit around Tasmania
+gdalio_set_default_grid(gdalio_local_grid(147, -42, buffer  = 2e6))
+## specify a GDAL tile server, we'll warp direct to our grid above
+virtualearth_imagery <- tempfile(fileext = ".xml")
+writeLines('<GDAL_WMS>
+<Service name="VirtualEarth">
+<ServerUrl>http://a${server_num}.ortho.tiles.virtualearth.net/tiles/a${quadkey}.jpeg?g=90</ServerUrl>
+</Service>
+<MaxConnections>4</MaxConnections>
+<Cache/>
+</GDAL_WMS>', virtualearth_imagery)
+img <- gdalio_raster(virtualearth_imagery, bands = 1:3)
+op <- par(mfrow = c(2, 1))
+plot( raster::extent(img) + 5e5, asp = 1, col = "white")
+raster::plotRGB(img, add = TRUE)
+axis(1)
+axis(2)
+wkb <- drawio_data(shp)  ## we return as wk::wkb(<GDAL WKB>)
+library(wkutils)
+plot(wkb)
+par(op)
+}

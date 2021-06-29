@@ -1,28 +1,53 @@
 
+.make_world_shape <- function() {
+  system.file("shapes/world.gpkg", package = "spData", mustWork = TRUE)
+}
+
 #' Read GDAL drawing geometry and fields data
 #'
 #' @param dsn character string, drawing data source understood by GDAL
 #' @param ... arguments passed to 'vapour::vapour_read_attributes()'
 #' @return list of numeric vectors
 #' @export
-#' @exampls
+#' @examples
+#' library(gdalio)
+#' shp <- system.file("shapes/world.gpkg", package = "spData", mustWork = TRUE)
+#' ## set a local context, a bit around Tasmania
+#' gdalio_set_default_grid(gdalio_local_grid(147, -42, buffer  = 2e6))
+#
+#' ## specify a GDAL tile server, we'll warp direct to our grid above
+#' virtualearth_imagery <- tempfile(fileext = ".xml")
+#' writeLines('<GDAL_WMS>
+#' <Service name="VirtualEarth">
+#' <ServerUrl>http://a${server_num}.ortho.tiles.virtualearth.net/tiles/a${quadkey}.jpeg?g=90</ServerUrl>
+#' </Service>
+#' <MaxConnections>4</MaxConnections>
+#' <Cache/>
+#' </GDAL_WMS>', virtualearth_imagery)
+#
+# ## get the image, then get the vector data that intersects this box
+#' img <- gdalio_raster(virtualearth_imagery, bands = 1:3)
+#' op <- par(mfrow = c(2, 1))
+#' plot( raster::extent(img) + 5e5, asp = 1, col = "white")
+#' raster::plotRGB(img, add = TRUE)
+#' axis(1)
+#' axis(2)
+# ## this generates a bbox index, projects that and sweeps out only WKB that are overlap our gdalio grid extent
+#' wkb <- drawio_data(shp)  ## we return as wk::wkb(<GDAL WKB>)
+#' library(wkutils)
+#' plot(wkb)
+#' par(op)
 drawio_data <- function(dsn, ...) {
-  UseMethod("gdalio_data")
+  UseMethod("drawio_data")
 }
+# drawio_data.vrt_simple <- function(dsn, ...) {
+# not sensible for vector, very unlikely needed but more general VRT would be
+
 #' @export
-drawio_data.vrt_simple <- function(dsn, ...) {
-  ## these have to be NULL, or 4 numbers and a string
-  src_extent <- .vrt_extent(dsn)
-  if (is.null(src_extent)) src_extent <- 0  ## that's what vapour expects, not NULL
-  src_proj <- .vrt_projection(dsn)
-  drawio_data(unclass(dsn), source_extent = src_extent, source_wkt = src_proj, ...)
-}
-#' @export
-#' @importFrom vapour vapour_warp_raster
+#' @importFrom vapour vapour_read_extent vapour_layer_info
 drawio_data.default <- function(dsn, ...) {
   g <- gdalio_get_default_grid()
-
-  extents <- do.call(rbind, vapour::vapour_read_extent(dsn))
+  extents <- do.call(rbind, vapour::vapour_read_extent(dsn, ...))
   x <- as.vector(rbind(extents[,1], extents[,1], extents[,2], extents[,2], extents[,1], NA))
   y <- as.vector(rbind(extents[,3], extents[,4], extents[,4], extents[,3], extents[,3], NA))
   ## this isnt' right still but it'll do
@@ -36,10 +61,10 @@ drawio_data.default <- function(dsn, ...) {
         not.na <- ! is.na( x )
         split( x[not.na], idx[not.na] )
   }
-  polys <- reproj::reproj(cbind(xx, yy), "+proj=laea", source = "<get source projection>")
+  ## we probably need vapour_layer_info to ignore the dots that aren't its
+  polys <- reproj::reproj(cbind(xx, yy), g$projection, source = vapour::vapour_layer_info(dsn, ...)$projection$Proj4)
   xrange <- do.call(rbind, lapply(splitna(polys[,1]), range))
   yrange <- do.call(rbind, lapply(splitna(polys[,2]), range))
-
   ## now we find which xrange+yrange falls in our default extent
 
   x_in <- (xrange[,1] >= g$extent[1]  & xrange[,1] <= g$extent[2]) |
@@ -48,8 +73,12 @@ drawio_data.default <- function(dsn, ...) {
     (yrange[,2] >= g$extent[3]  & yrange[,2] <= g$extent[4])
 
   if (any(x_in & y_in)) {
-    message("we have work to do")
+
+    idx <- which(x_in & y_in)
+    geom <- vapour:::gdal_dsn_read_geom_ia(dsn, layer = 0L, sql = "", ex = 0, format = "wkb", ia = idx-1)
   } else {
-    message("nothing to do")
+    message("no features found")
+    return(NULL)
   }
+  wk::wkb(geom)
 }
