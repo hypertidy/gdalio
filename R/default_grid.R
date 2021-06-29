@@ -1,3 +1,29 @@
+#' Generate a local grid
+#'
+#' Generate a default local grid to use for subsequent data reads.
+#'
+#' All arguments have default values.
+#' @param x longitude
+#' @param y latitude
+#' @param buffer width either side of x, y
+#' @param family projection family (as per PROJ strings)
+#' @param dim size of grid nx, ny
+#'
+#' @return list appropriate for [gdalio_set_default_grid()]
+#' @export
+#'
+#' @examples
+#' gdalio_local_grid()
+#' gdalio_local_grid(family = "stere")
+gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", dim = if (dev.cur() == 1) {c(512, 512)} else {dev.size("px")}) {
+  xy <- xy.coords(x, y)
+  x0 <- mean(xy$x, na.rm = TRUE)
+  y0 <- mean(xy$y, na.rm = TRUE)
+  list(extent = c(-1, 1, -1, 1) * buffer/2,
+       dimension = dim,
+       projection = sprintf("+proj=%s +lon_0=%f +lat_0=%f +datum=WGS84", family, x0, y0)
+  )
+}
 
 
 .gdalio_default_grid <- function() {
