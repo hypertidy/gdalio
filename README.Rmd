@@ -159,7 +159,12 @@ gdalio_stars <- function(dsn, ...) {
    r
 }
 
-
+# graphics raster
+gdalio_graphics <- function(dsn, ..., bands = 1:3) {
+  hex <- gdalio_data_hex(dsn, bands = bands, ...)
+  g <- gdalio_get_default_grid()
+  grDevices::as.raster(t(matrix(hex, g$dimension[1])))
+}
 ```
 
 To prove the point we now read the same data but into our format of choice.  We are *re-reading* data here (it all exists in `pix` above, but you get the idea). 
@@ -181,7 +186,7 @@ In the same way, we can also use different methods of resampling and easily see 
 ```{r example-resample}
 op <- par(mfrow = c(2, 1))
 image(gdalio_stars(f, resample = "cubicspline"), col = hcl.colors(26))
-raster::plot(gdalio_raster(f, resample = "lanczos"), col = hcl.colors(26))
+image(gdalio_stars(f, resample = "lanczos"), col = hcl.colors(26))
 par(op)
 ```
 
@@ -199,7 +204,7 @@ writeLines('<GDAL_WMS>
   <Cache/>
 </GDAL_WMS>', virtualearth_imagery)
 
-img <- gdalio_raster(virtualearth_imagery)
+img <- gdalio_raster(virtualearth_imagery, bands = 1:3)
 raster::plotRGB(img)
 
 ## let's really zoom in on somewhere cool
@@ -207,10 +212,38 @@ grid1 <- list(extent = c(-1, 1, -1, 1) * 2e3,
                              dimension = c(512, 512), 
                              projection = "+proj=laea +lon_0=147.325 +lat_0=-42.880556")
 gdalio_set_default_grid(grid1)
-img <- gdalio_raster(virtualearth_imagery)
+img <- gdalio_raster(virtualearth_imagery, bands = 1:3)
 raster::plotRGB(img)
 
 ```
+
+To obtain the raw data values we can use `gdalio_data_rgb()` or `gdalio_data_hex()` without specifying the number
+of bands, but these are a little experimental for now. 
+ 
+```{r rgb}
+rgbvals <- gdalio_data_rgb(virtualearth_imagery)
+hexvals <- gdalio_data_hex(virtualearth_imagery)
+
+```
+
+We can use this to drive R's own raster type, the `grDevices::as.raster()` array. 
+
+```{r grDevices-raster}
+arr <- gdalio_graphics(virtualearth_imagery)
+grid1 <- gdalio_get_default_grid()
+plot(matrix(grid1$extent, 2), type = "n", asp = 1)
+graphics::rasterImage(arr, grid1$extent[1], grid1$extent[3], grid1$extent[2], grid1$extent[4])
+```
+
+Using R itself we can `plot()` that but it must be transpose (and we must use a different idiom for the extent).
+
+*Don't use plot.raster(xlim,ylim) they don't what they claim to do, we can only get sensible extents at R version 4.1.0 with `rasterImage()`.*
+
+```{r dum-raster}
+plot(t(arr))
+par("usr")
+```
+
 
 ## Default grid (there is one)
 

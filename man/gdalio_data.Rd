@@ -2,20 +2,22 @@
 % Please edit documentation in R/gdalio.R
 \name{gdalio_data}
 \alias{gdalio_data}
-\title{Title}
+\title{Read GDAL raster numeric data}
 \usage{
-gdalio_data(dsn, ...)
+gdalio_data(dsn, ..., bands = 1L)
 }
 \arguments{
 \item{dsn}{character string, raster source understood by GDAL}
 
 \item{...}{arguments passed to 'vapour::vapour_warp_raster'}
+
+\item{bands}{default 1L, but can be more, duplicated in different order, or 'NULL' for all}
 }
 \value{
 list of numeric vectors
 }
 \description{
-Title
+Data may be one band (the default, first band) or many.
 }
 \examples{
 \dontrun{
