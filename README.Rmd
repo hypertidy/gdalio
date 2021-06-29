@@ -24,6 +24,8 @@ knitr::opts_chunk$set(
 
 The goal of gdalio is to read data direct with GDAL warp, with an assumed grid specification. 
 
+
+
 We have these functions to easily read raster data via the GDAL warp library: 
 
 * `gdalio_data()` read data directly from a *data source name* i.e. file path, url, or database connection 
@@ -53,7 +55,10 @@ remotes::install_github("hypertidy/gdalio")
 
 At root, what we're talking about is having a *target grid*, we nominate it upfront and then any data we request from GDAL will *fill that grid* by GDAL's warp magic. 
 
-This works best for data you have access to locally, nice examples are available but require a bit of prep. We have a sea surface temperature data set, we need GDAL's subdataset syntax for a file at a URL and *augment* our file address with what we know is the projection of the data. 
+This is very useful because you probably *are somewhere*, so there's a natural region around you and you could be interested in it. We can easily generate
+a query grid for using for any GDAL read with the `gdalio_local_grid()`, just give it your longitude,latitude and perhaps change the buffer width to easily get a raster canvas suitable for reading raster data. 
+
+This works best for data you have access to locally, nice examples are available but some that we can share for examples anyone can run require a bit of prep. We have a sea surface temperature data set, we need GDAL's subdataset syntax for a file at a URL and *augment* our file address with what we know is the projection of the data. 
 
 ```{r oisst-source}
 library(gdalio)
