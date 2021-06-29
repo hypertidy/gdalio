@@ -1,6 +1,6 @@
 Package: gdalio
 Title: Read Data to via GDAL Warper to an Assumed Grid
-Version: 0.0.1
+Version: 0.0.1.9001
 Authors@R: 
     person(given = "Michael D.",
            family = "Sumner",
