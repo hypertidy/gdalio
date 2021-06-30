@@ -6,8 +6,9 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of gdalio is to read data direct with GDAL warp, with an
-assumed grid specification.
+The goal of gdalio is to read data direct with GDAL warp, with a simple
+configuration - specify the *target grid* once. This saves us from a lot
+of complication, juggling of formats, objects, and extra code.
 
 We have these functions to easily read raster data via the GDAL warp
 library:
@@ -17,21 +18,19 @@ library:
 -   `gdalio_set_default_grid()` specify a grid (extent, dimension,
     projection) to use for all subsequent operations
 -   `gdalio_get_default_grid()` get the grid currently in use
--   `vrt()` simple function to *augment* data sources that have missing
-    or incorrect *extent* or *projection* metadata
+-   `vrt()` simple function (not actually VRT, but doing similar in a
+    limited way) to *augment* data sources that have missing or
+    incorrect *extent* or *projection* metadata
+-   `gdalio_data_hex()`, `gdalio_data_rgb()` special cases of
+    gdalio\_data() to read 3 or 4 bands, convert to text hex codes
+-   `gdalio_local_grid()` a helper to create a local projected region
+    around a longlat (optional width extent, dimension, projection
+    family)
 
 In this readme we illustrate the use of these from some online and local
 raster data sources, and provide helpers for reading into particular
 formats used in R (base matrix, raster package, stars package, spatstat
 package, terra package).
-
-TODO:
-
--   [ ] we need to be able to revert to the native grid of a source :)
--   [ ] be able to set a default grid for general use, or have helpers
-    of them
--   [ ] do we automatically read all bands if not specified, or find the
-    special cases 1, 2, 4?
 
 ## Installation
 
@@ -44,28 +43,47 @@ You can install gdalio from
 remotes::install_github("hypertidy/gdalio")
 ```
 
+## Target grid specification
+
+Key is having a *target grid*, we nominate it upfront and then any data
+we request from GDAL will *fill that grid* by GDAL’s warp magic.
+
+A *grid* is an abstract description of an *image* data set:
+
+-   extent `(xmin, xmax, ymin, ymax)` in some coordinate system
+-   dimension (number of columns, number of rows)
+-   projection - the actual coordinate system
+
+Often we have an actual object in some format that records this
+information, but this can be much simpler by working with just 6 numbers
+and one character string.
+
 ## Example
 
-At root, what we’re talking about is having a *target grid*, we nominate
-it upfront and then any data we request from GDAL will *fill that grid*
-by GDAL’s warp magic.
+This works best for data you have access to locally, and in the simplest
+case you could use gdalio like this, but more nuanced use requires some
+effort to define the structure of the output data (which we explore
+below).
 
-This works best for data you have access to locally, nice examples are
-available but require a bit of prep. We have a sea surface temperature
-data set, we need GDAL’s subdataset syntax for a file at a URL and
-*augment* our file address with what we know is the projection of the
-data.
+``` r
+library(gdalio)
+vals <- gdal_data("myhugefile.tif")
+```
+
+For a real example we use a file that’s on the internet and requires a
+little extra prep.
+
+A sea surface temperature data set, we need GDAL’s subdataset syntax for
+a file at a URL and *augment* our file address with what we know is the
+projection of the data.
 
 ``` r
 library(gdalio)
 
 ## online data, daily ocean temperature surface product, one layer in longlat 0.25 degree res
-f <- vrt("NETCDF:\"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/198403/oisst-avhrr-v02r01.19840308.nc\":sst", 
+f <- vrt('NETCDF:"/vsicurl/https://www.ncei.noaa.gov/data/sea-surface-temperature-optimum-interpolation/v2.1/access/avhrr/201809/oisst-avhrr-v02r01.20180929.nc":sst', 
          projection = "+proj=longlat +datum=WGS84")
 ```
-
-Now, we can set up the grid for the window of data we want and start
-reading.
 
 ``` r
 ## we set up a grid (this is a *raster* in abstraction)
@@ -86,21 +104,24 @@ plot(pix[[1]], pch = ".")
 
 <img src="man/figures/README-warp-1.png" width="100%" />
 
+Those look a little simplified (it’s because we are asking for quite
+high resolution from a low resolution source). So let’s use a different
+*resampling* algorithm (default is nearest neighbour, no interpolation).
+
 ``` r
-## those look a little simplified (it's because we are asking for quite high resolution from a low resolution source)
 pix_interp <- gdalio_data(f, resample = "bilinear")  
 ## use resampling we get quite a different result
 plot(pix_interp[[1]], pch = ".")
 ```
 
-<img src="man/figures/README-warp-2.png" width="100%" />
+<img src="man/figures/README-bilinear-1.png" width="100%" />
 
 Normally of course we want a bit more convenience, and actually fill a
 format in R or some package that has spatial types. So we define those
 helpers here.
 
-These equivalent functions format the data into objects used by various
-packages.
+This function is equivalent to a number of others defined just below, to
+format the data into objects used by various packages.
 
 ``` r
 ## simple list format used by graphics::image() - we can only handle one band/layer
@@ -113,7 +134,7 @@ gdalio_base <- function(dsn, ...) {
 }
 ```
 
-R for a long time had a powerful list(x,y,z) format for `image()`:
+R for a long time had this powerful list(x,y,z) format for `image()`:
 
 ``` r
 xyz <- gdalio_base(f)
@@ -122,7 +143,12 @@ image(xyz)
 
 <img src="man/figures/README-image-1.png" width="100%" />
 
-And now there are a bunch of other types for rasters.
+There are now several different formats used by various packages that
+are equivalent. At root they specify *extent*, *dimension*, *projection*
+the core concepts of our *target grid* (the less specialized ones ignore
+the projection). Some of these kinds of functions require those
+format-specific packages, but they are easy enough to write so we list
+these here as examples.
 
 ``` r
 ## spatstat
@@ -174,7 +200,29 @@ gdalio_graphics <- function(dsn, ..., bands = 1:3) {
   g <- gdalio_get_default_grid()
   grDevices::as.raster(t(matrix(hex, g$dimension[1])))
 }
+
+## of course if you just want a matrix and forget about the extent you can go right ahead
+gdalio_matrix <- function(dsn, ...) {
+  v <- gdalio_data(dsn, ...)
+  g <- gdalio_get_default_grid()
+  
+  matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1, drop = FALSE]
+}
+
+# get an array (no one will ever do this but it's here)
+gdalio_array <- function(dsn, ...) {
+  v <- gdalio_data(dsn, ...)
+  g <- gdalio_get_default_grid()
+  
+  array(v[[1]], c(g$dimension, length(v)))[,g$dimension[2]:1, , drop = FALSE]
+}
 ```
+
+Note that for each format there is nothing of consequence that is
+different, from the perspective of gdalio they all take the same set of
+pixel values, there are just tiny differences in how the extent and
+projection metadata are handled, and in storage orientation for the data
+itself.
 
 To prove the point we now read the same data but into our format of
 choice. We are *re-reading* data here (it all exists in `pix` above, but
@@ -195,24 +243,25 @@ plot(gdalio_im(f), main = "\nspatstat")
 par(op)
 ```
 
+### Resampling algorithm
+
 In the same way, we can also use different methods of resampling and
 easily see the effect.
 
 ``` r
-op <- par(mfrow = c(2, 1))
-image(gdalio_stars(f, resample = "cubicspline"), col = hcl.colors(26))
-image(gdalio_stars(f, resample = "lanczos"), col = hcl.colors(26))
+op <- par(mfrow = c(2, 2), mar = par("mar")/3)
+image(cs <- gdalio_stars(f, resample = "cubicspline"), col = hcl.colors(26))
+image(lz <- gdalio_stars(f, resample = "near"), col = hcl.colors(26))
+image(cs - lz)
+par(op)
 ```
 
 <img src="man/figures/README-example-resample-1.png" width="100%" />
 
-``` r
-par(op)
-```
-
 ## Imagery
 
-This works as well for online image sources that present in photo form.
+This works as well for online image sources (like photos or street
+maps).
 
 ``` r
 virtualearth_imagery <- tempfile(fileext = ".xml")
@@ -263,14 +312,14 @@ graphics::rasterImage(arr, grid1$extent[1], grid1$extent[3], grid1$extent[2], gr
 
 <img src="man/figures/README-grDevices-raster-1.png" width="100%" />
 
-Using R itself we can `plot()` that but it must be transpose (and we
-must use a different idiom for the extent).
+Using R itself we can `plot()` but we must use a different idiom for the
+extent.
 
-*Don’t use plot.raster(xlim,ylim) they don’t what they claim to do, we
+*Don’t use `plot(arr, xlim = ,ylim = )` it does not work as claimed we
 can only get sensible extents at R version 4.1.0 with `rasterImage()`.*
 
 ``` r
-plot(t(arr))
+plot(arr)
 ```
 
 <img src="man/figures/README-dum-raster-1.png" width="100%" />
@@ -282,33 +331,19 @@ par("usr")
 
 ## Default grid (there is one)
 
-Say we don’t set a grid at all, just go a default.
+Say we don’t set a grid at all, just go a default. Currently gdalio has
+a default for an entire world longlat grid. This means we can read from
+any source and we’ll get something (though we might not see anything if
+the source is a tiny region).
 
 ``` r
 gdalio_set_default_grid()
-
-image(gdalio_stars(f))
+terra::plot(gdalio_terra(f))
 ```
 
 <img src="man/figures/README-default-1.png" width="100%" />
 
-``` r
-raster::plot(gdalio_raster(f), col = hcl.colors(26))
-```
-
-<img src="man/figures/README-default-2.png" width="100%" />
-
-``` r
-terra::plot(gdalio_raster(f))
-```
-
-<img src="man/figures/README-default-3.png" width="100%" />
-
-``` r
-plot(gdalio_im(f))
-```
-
-<img src="man/figures/README-default-4.png" width="100%" />
+## Miscellaneous
 
 Some sources, files in spData, image servers, etc.
 
