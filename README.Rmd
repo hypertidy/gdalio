@@ -22,6 +22,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 ![r-universe](https://hypertidy.r-universe.dev/badges/gdalio)
+[![R-CMD-check](https://github.com/hypertidy/gdalio/workflows/R-CMD-check/badge.svg)](https://github.com/hypertidy/gdalio/actions)
 <!-- badges: end -->
 
 The goal of gdalio is to read data direct with GDAL warp, with a simple configuration  - specify the *target grid* once.  This saves us from a lot of complication, juggling of formats, objects, and extra code. 
