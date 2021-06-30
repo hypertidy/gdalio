@@ -75,7 +75,7 @@ drawio_data.default <- function(dsn, ...) {
   if (any(x_in & y_in)) {
 
     idx <- which(x_in & y_in)
-    geom <- vapour:::gdal_dsn_read_geom_ia(dsn, layer = 0L, sql = "", ex = 0, format = "wkb", ia = idx-1)
+    geom <- vapour:::vapour_read_geometry_ia(dsn, layer = 0L, sql = "", ex = 0, format = "wkb", ia = idx-1)
   } else {
     message("no features found")
     return(NULL)
