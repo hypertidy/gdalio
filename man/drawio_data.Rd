@@ -12,7 +12,7 @@ drawio_data(dsn, ...)
 \item{...}{arguments passed to 'vapour::vapour_read_attributes()'}
 }
 \value{
-list of numeric vectors
+list of blob geometries
 }
 \description{
 Read GDAL drawing geometry and fields data
@@ -32,13 +32,9 @@ writeLines('<GDAL_WMS>
 <Cache/>
 </GDAL_WMS>', virtualearth_imagery)
 img <- gdalio_raster(virtualearth_imagery, bands = 1:3)
-op <- par(mfrow = c(2, 1))
 plot( raster::extent(img) + 5e5, asp = 1, col = "white")
 raster::plotRGB(img, add = TRUE)
 axis(1)
 axis(2)
-wkb <- drawio_data(shp)  ## we return as wk::wkb(<GDAL WKB>)
-library(wkutils)
-plot(wkb)
-par(op)
+bin <- drawio_data(shp)
 }

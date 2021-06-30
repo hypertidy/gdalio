@@ -7,7 +7,7 @@
 #'
 #' @param dsn character string, drawing data source understood by GDAL
 #' @param ... arguments passed to 'vapour::vapour_read_attributes()'
-#' @return list of numeric vectors
+#' @return list of blob geometries
 #' @export
 #' @examples
 #' library(gdalio)
@@ -27,16 +27,12 @@
 #
 # ## get the image, then get the vector data that intersects this box
 #' img <- gdalio_raster(virtualearth_imagery, bands = 1:3)
-#' op <- par(mfrow = c(2, 1))
 #' plot( raster::extent(img) + 5e5, asp = 1, col = "white")
 #' raster::plotRGB(img, add = TRUE)
 #' axis(1)
 #' axis(2)
 # ## this generates a bbox index, projects that and sweeps out only WKB that are overlap our gdalio grid extent
-#' wkb <- drawio_data(shp)  ## we return as wk::wkb(<GDAL WKB>)
-#' library(wkutils)
-#' plot(wkb)
-#' par(op)
+#' bin <- drawio_data(shp)
 drawio_data <- function(dsn, ...) {
   UseMethod("drawio_data")
 }
@@ -80,5 +76,5 @@ drawio_data.default <- function(dsn, ...) {
     message("no features found")
     return(NULL)
   }
-  wk::wkb(geom)
+  geom
 }
