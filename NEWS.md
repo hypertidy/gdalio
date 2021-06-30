@@ -1,5 +1,6 @@
 # gdalio dev
 
+* New function `gdalio_local_grid()` to easily generate a local grid around a longitude,latitude. 
 
 # gdalio 0.0.1
 
