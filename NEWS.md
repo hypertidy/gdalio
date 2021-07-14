@@ -1,5 +1,7 @@
 # gdalio dev
 
+* Added support for raster, terra, stars objects to `gdalio_set_default_grid()`. 
+
 * New function `gdalio_local_grid()` to easily generate a local grid around a longitude,latitude. 
 
 # gdalio 0.0.1

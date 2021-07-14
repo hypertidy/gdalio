@@ -7,13 +7,15 @@
 gdalio_set_default_grid(x)
 }
 \arguments{
-\item{x}{optional grid specification}
+\item{x}{grid specification, a list with '$extent, $dimension, $projection` or a spatial grid object see Details}
 }
 \value{
 nothing, used to set a default grid available globally
 }
 \description{
-Title
+Input may be a list with \code{extent} \verb{$dimension}, \verb{$projection}, which is \code{c(xmin, xmax, ymin, ymax)},
+\code{c(ncol, nrow)}, and string (accepted by GDAL as a projection input). Alternatively, use
+a raster, stars, or terra object. Only simple cases of stars will work (regular grids with positive x, negative y transforms).
 }
 \examples{
 gdalio_set_default_grid(list(extent = c(-1000, 1000, -2000, 2000),
