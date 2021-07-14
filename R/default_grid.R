@@ -11,7 +11,7 @@
 #'
 #' @return list appropriate for [gdalio_set_default_grid()]
 #' @export
-#'
+#' @importFrom grDevices dev.cur dev.size xy.coords
 #' @examples
 #' gdalio_local_grid()
 #' gdalio_local_grid(family = "stere")
