@@ -52,8 +52,7 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     ## only simple cases will work
     ex <- c(c(d[[1]]$from -1, d[[1]]$to) * d[[1]]$delta + d[[1]]$offset,
             c(d[[2]]$from - 1, d[[2]]$to) * -d[[2]]$delta - d[[2]]$offset)
-    dimension <- c(ex[2] - ex[1], ex[4] - ex[3
-    ])
+    dimension <- c(d[[1]]$to -  d[[1]]$from + 1, d[[2]]$to -  d[[2]]$from  + 1)
     crs <- d[[1]]$refsys[["wkt"]]
     x <- list(extent = ex, dimension = dimension, projection = crs)
   }
