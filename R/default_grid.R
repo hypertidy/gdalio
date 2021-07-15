@@ -37,7 +37,7 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     ## we have a {raster}
     x <- list(extent = c(x@extent@xmin, x@extent@xmax, x@extent@ymin, x@extent@ymax),
               dimension = c(x@ncols, x@nrows),
-              projection = x@crs)
+              projection = x@crs@projargs)
   }
   ## can we get away with this?
   if (isS4(x) && inherits(x, "SpatRaster")) {
