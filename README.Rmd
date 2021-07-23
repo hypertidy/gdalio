@@ -50,7 +50,7 @@ options(repos = c(
     CRAN = 'https://cloud.r-project.org'))
 
 # Install some packages
-install.packages('gdalio')
+install.packages(c('vapour', 'gdalio'))
 ```
 
 ## Target grid specification
@@ -118,6 +118,8 @@ plot(pix_interp[[1]], pch = ".")
 ```
 
 Normally of course we want a bit more convenience, and actually fill a format in R or some package that has spatial types. So we define those helpers here. 
+
+## Raster formats 
 
 This function is equivalent to a number of others defined just below, to format the data into objects used by various packages. 
 

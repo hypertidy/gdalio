@@ -6,6 +6,7 @@
 <!-- badges: start -->
 
 ![r-universe](https://hypertidy.r-universe.dev/badges/gdalio)
+[![R-CMD-check](https://github.com/hypertidy/gdalio/workflows/R-CMD-check/badge.svg)](https://github.com/hypertidy/gdalio/actions)
 <!-- badges: end -->
 
 The goal of gdalio is to read data direct with GDAL warp, with a simple
@@ -45,7 +46,7 @@ options(repos = c(
     CRAN = 'https://cloud.r-project.org'))
 
 # Install some packages
-install.packages('gdalio')
+install.packages(c('vapour', 'gdalio'))
 ```
 
 ## Target grid specification
@@ -124,6 +125,8 @@ plot(pix_interp[[1]], pch = ".")
 Normally of course we want a bit more convenience, and actually fill a
 format in R or some package that has spatial types. So we define those
 helpers here.
+
+## Raster formats
 
 This function is equivalent to a number of others defined just below, to
 format the data into objects used by various packages.
