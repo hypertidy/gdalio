@@ -19,9 +19,14 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
   xy <- xy.coords(x, y)
   x0 <- mean(xy$x, na.rm = TRUE)
   y0 <- mean(xy$y, na.rm = TRUE)
+  if (grepl("^+", family) || grepl("^[", family)) {
+    projection <- family
+  } else {
+    projection <- sprintf("+proj=%s +lon_0=%f +lat_0=%f +datum=WGS84", family, x0, y0)
+  }
   list(extent = c(-1, 1, -1, 1) * buffer/2,
        dimension = dim,
-       projection = sprintf("+proj=%s +lon_0=%f +lat_0=%f +datum=WGS84", family, x0, y0)
+       projection = projection
   )
 }
 
