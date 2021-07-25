@@ -3,6 +3,14 @@
 #'
 #' Data may be one band (the default, first band) or many.
 #'
+#' [gdalio_data()] returns a list of vectors, [gdalio_matrix()] and [gdalio_array()] and
+#' [gdalio_graphics()] return
+#' a matrix, array, matrix of the necessary shape, as used by [image()] and [plot()].
+#'
+#' The matrix of hex values returned by [gdalio_graphics()] cannot really be placed on a spatial
+#' plot window without a lot of extra work, but it's good for fast visuals to 'plot()' the output.
+#' We can write helpers to plot this thing better but WIP atm.
+#'
 #' @param dsn character string, raster source understood by GDAL
 #' @param ... arguments passed to 'vapour::vapour_warp_raster'
 #' @param bands default 1L, but can be more, duplicated in different order, or 'NULL' for all
@@ -68,10 +76,48 @@ gdalio_data_hex <- function(dsn, bands = 1:3, max_col_value = 255, ...) {
   .convert_list_bands_hex(v, max_col_value = max_col_value)
 }
 
+
+#' @name gdalio_data
+#' @export
+gdalio_graphics <- function(dsn, ..., bands = 1:3) {
+  hex <- gdalio_data_hex(dsn, bands = bands, ...)
+  g <- gdalio_get_default_grid()
+  grDevices::as.raster(t(matrix(hex, g$dimension[1])))
+}
+#' @name gdalio_data
+#' @export
+gdalio_matrix <- function(dsn, ...) {
+  v <- gdalio_data(dsn, ...)
+  g <- gdalio_get_default_grid()
+
+  matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1, drop = FALSE]
+}
+#' @name gdalio_data
+#' @export
+gdalio_array <- function(dsn, ...) {
+  v <- gdalio_data(dsn, ...)
+  g <- gdalio_get_default_grid()
+
+  array(v[[1]], c(g$dimension, length(v)))[,g$dimension[2]:1, , drop = FALSE]
+}
+
+
+
 .convert_list_bands_hex <- function(v, max_col_value = 255) {
   if (length(v) == 3) {
     out <- grDevices::rgb(v[[1]], v[[2]], v[[3]], maxColorValue = max_col_value)
   } else {
     out <- grDevices::rgb(v[[1]], v[[2]], v[[3]], v[[4]], maxColorValue = max_col_value)
   }
+}
+#' Print the code to source format-specific functions
+#'
+#' You can run the code displayed by this function to define package-specific formats for the gdalio data.
+#'
+#' Currently running the code displayed by this function will load functions for terra, stars, raster, and spatstat.
+#' @export
+#' @examples
+#' gdalio_format_source()
+gdalio_format_source <- function() {
+  'source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))'
 }

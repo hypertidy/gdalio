@@ -2,9 +2,18 @@
 % Please edit documentation in R/gdalio.R
 \name{gdalio_data}
 \alias{gdalio_data}
+\alias{gdalio_graphics}
+\alias{gdalio_matrix}
+\alias{gdalio_array}
 \title{Read GDAL raster numeric data}
 \usage{
 gdalio_data(dsn, ..., bands = 1L)
+
+gdalio_graphics(dsn, ..., bands = 1:3)
+
+gdalio_matrix(dsn, ...)
+
+gdalio_array(dsn, ...)
 }
 \arguments{
 \item{dsn}{character string, raster source understood by GDAL}
@@ -18,6 +27,15 @@ list of numeric vectors
 }
 \description{
 Data may be one band (the default, first band) or many.
+}
+\details{
+\code{\link[=gdalio_data]{gdalio_data()}} returns a list of vectors, \code{\link[=gdalio_matrix]{gdalio_matrix()}} and \code{\link[=gdalio_array]{gdalio_array()}} and
+\code{\link[=gdalio_graphics]{gdalio_graphics()}} return
+a matrix, array, matrix of the necessary shape, as used by \code{\link[=image]{image()}} and \code{\link[=plot]{plot()}}.
+
+The matrix of hex values returned by \code{\link[=gdalio_graphics]{gdalio_graphics()}} cannot really be placed on a spatial
+plot window without a lot of extra work, but it's good for fast visuals to 'plot()' the output.
+We can write helpers to plot this thing better but WIP atm.
 }
 \examples{
 \dontrun{

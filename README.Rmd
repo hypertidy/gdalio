@@ -148,6 +148,8 @@ concepts of our *target grid* (the less specialized ones ignore the projection).
 Some of these kinds of functions require those format-specific packages, but
 they are easy enough to write so we list these here as examples.
 
+There are functions `gdalio_matrix()`, `gdalio_array()`, and `gdalio_graphics()`  in this package that
+put the data into the native R image form. 
 
 ```{r raster-format, echo=FALSE}
 knitr::read_chunk("inst/raster_format/raster_format.codeR")
@@ -158,15 +160,12 @@ knitr::read_chunk("inst/raster_format/raster_format.codeR")
 <<gdalio_raster>>
 <<gdalio_terra>>
 <<gdalio_stars>>
-<<gdalio_graphics>>
-<<gdalio_matrix>>
-<<gdalio_array>>
 ```
 
 To obtain all of those functions you can do, but note the entire dependency requirement includes at least raster, stars, spatstat.geom, terra, so simply use the definitions as needed. 
 
-```{r source_format-chunks, eval=FALSE}
-source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))
+```{r source_format-chunks, eval=TRUE}
+writeLines(gdalio_format_source())
 ```
 
 Note that for each format there is nothing of consequence that is different,
@@ -312,7 +311,7 @@ sfiles <- list.files(system.file("raster", package = "spDataLarge", mustWork = T
 ## we don't take raster objects, just the spec: extent, dim, projection
 ri <- vapour::vapour_raster_info(sfiles[1])
 
-gdalio_set_default_grid(list(extent = affinity::gt_dim_to_extent(ri$geotransform, ri$dim), 
+gdalio_set_default_grid(list(extent = ri$extent, 
                              dimension = ri$dimXY, 
                              projection = ri$projection))
 s <- gdalio_stars(elevation.tiles.prod)

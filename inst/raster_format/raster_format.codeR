@@ -50,32 +50,3 @@ gdalio_stars <- function(dsn, ...) {
   r
 }
 ## ----
-
-## ---- gdalio_graphics
-## {grDevices}
-gdalio_graphics <- function(dsn, ..., bands = 1:3) {
-  hex <- gdalio_data_hex(dsn, bands = bands, ...)
-  g <- gdalio_get_default_grid()
-  grDevices::as.raster(t(matrix(hex, g$dimension[1])))
-}
-## ----
-
-## ---- gdalio_matrix
-## {base}
-gdalio_matrix <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
-
-  matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1, drop = FALSE]
-}
-## ----
-
-## ---- gdalio_array
-## {base}
-gdalio_array <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
-
-  array(v[[1]], c(g$dimension, length(v)))[,g$dimension[2]:1, , drop = FALSE]
-}
-## ----

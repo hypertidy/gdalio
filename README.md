@@ -158,6 +158,10 @@ the projection). Some of these kinds of functions require those
 format-specific packages, but they are easy enough to write so we list
 these here as examples.
 
+There are functions `gdalio_matrix()`, `gdalio_array()`, and
+`gdalio_graphics()` in this package that put the data into the native R
+image form.
+
 ``` r
 ## {spatstat.geom}
 gdalio_im <- function(dsn, ...) {
@@ -198,26 +202,6 @@ gdalio_stars <- function(dsn, ...) {
   r <- sf::st_set_crs(r, g$projection)
   r
 }
-## {grDevices}
-gdalio_graphics <- function(dsn, ..., bands = 1:3) {
-  hex <- gdalio_data_hex(dsn, bands = bands, ...)
-  g <- gdalio_get_default_grid()
-  grDevices::as.raster(t(matrix(hex, g$dimension[1])))
-}
-## {base}
-gdalio_matrix <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
-
-  matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1, drop = FALSE]
-}
-## {base}
-gdalio_array <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
-
-  array(v[[1]], c(g$dimension, length(v)))[,g$dimension[2]:1, , drop = FALSE]
-}
 ```
 
 To obtain all of those functions you can do, but note the entire
@@ -225,7 +209,8 @@ dependency requirement includes at least raster, stars, spatstat.geom,
 terra, so simply use the definitions as needed.
 
 ``` r
-source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))
+writeLines(gdalio_format_source())
+#> source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))
 ```
 
 Note that for each format there is nothing of consequence that is
@@ -391,7 +376,7 @@ sfiles <- list.files(system.file("raster", package = "spDataLarge", mustWork = T
 ## we don't take raster objects, just the spec: extent, dim, projection
 ri <- vapour::vapour_raster_info(sfiles[1])
 
-gdalio_set_default_grid(list(extent = affinity::gt_dim_to_extent(ri$geotransform, ri$dim), 
+gdalio_set_default_grid(list(extent = ri$extent, 
                              dimension = ri$dimXY, 
                              projection = ri$projection))
 s <- gdalio_stars(elevation.tiles.prod)
