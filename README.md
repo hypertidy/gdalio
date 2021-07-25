@@ -18,17 +18,29 @@ library:
 
 -   `gdalio_data()` read data directly from a *data source name*
     i.e. file path, url, or database connection
+
 -   `gdalio_set_default_grid()` specify a grid (extent, dimension,
     projection) to use for all subsequent operations
+
 -   `gdalio_get_default_grid()` get the grid currently in use
+
 -   `vrt()` simple function (not actually VRT, but doing similar in a
     limited way) to *augment* data sources that have missing or
     incorrect *extent* or *projection* metadata
+
+-   `gdalio_matrix()`, `gdalio_array()`, and `gdalio_graphics()` which
+    reformat the data into commonly used R types for images
+
 -   `gdalio_data_hex()`, `gdalio_data_rgb()` special cases of
     gdalio\_data() to read 3 or 4 bands, convert to text hex codes
+
 -   `gdalio_local_grid()` a helper to create a local projected region
     around a longlat (optional width extent, dimension, projection
     family)
+
+-   `gdalio_format_source()` a helper to *print out the code you can
+    run* to define formatters for spatial package types (raster, stars,
+    terra, spatstat).
 
 In this readme we illustrate the use of these from some online and local
 raster data sources, and provide helpers for reading into particular
