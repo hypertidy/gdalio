@@ -185,14 +185,15 @@ gdalio_im <- function(dsn, ...) {
   spatstat.geom::im(t(m[,ncol(m):1]), xrange = g$extent[1:2], yrange = g$extent[3:4])
 }
 ## {raster}
-gdalio_raster <- function(dsn, ...) {
+gdalio_raster <-
+function(dsn, ...) {
   v <- gdalio_data(dsn, ...)
   g <- gdalio_get_default_grid()
   r <- raster::raster(raster::extent(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) {
     r <- raster::brick(replicate(length(v), r, simplify = FALSE))
   }
-  raster::setValues(r, matrix(unlist(v), prod(g$dimension)))
+  raster::setValues(r, do.call(cbind, v))
 }
 ## {terra}
 gdalio_terra <- function(dsn, ...) {
@@ -200,13 +201,13 @@ gdalio_terra <- function(dsn, ...) {
   g <- gdalio_get_default_grid()
   r <- terra::rast(terra::ext(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) terra::nlyr(r) <- length(v)
-  terra::setValues(r, matrix(unlist(v), prod(g$dimension)))
+  terra::setValues(r, do.call(cbind, v))
 }
 ## {stars}
 gdalio_stars <- function(dsn, ...) {
   v <- gdalio_data(dsn, ...)
   g <- gdalio_get_default_grid()
-  aa <- array(unlist(v), c(g$dimension[1], g$dimension[2], length(v)))#[,g$dimension[2]:1, , drop = FALSE]
+  aa <- array(unlist(v, use.names = FALSE), c(g$dimension[1], g$dimension[2], length(v)))#[,g$dimension[2]:1, , drop = FALSE]
   if (length(v) == 1) aa <- aa[,,1, drop = TRUE]
   r <- stars::st_as_stars(sf::st_bbox(c(xmin = g$extent[1], ymin = g$extent[3], xmax = g$extent[2], ymax = g$extent[4])),
                           nx = g$dimension[1], ny = g$dimension[2], values = aa)
@@ -335,6 +336,21 @@ plot(arr)
 par("usr")
 #> [1] -191.1688  703.1688    0.0000  512.0000
 ```
+
+Another great example off twitter.
+
+``` r
+u <- "WMS:https://tiles.maps.eox.at/?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=s2cloudless-2019&SRS=EPSG:4326&BBOX=-180.000000,-90.000000,180.000000,90.000000&FORMAT=image/png&TILESIZE=256&OVERVIEWCOUNT=17&MINRESOLUTION=0.0000053644180298&TILED=true"
+
+library(gdalio) ## https://github.com/hypertidy/gdalio
+gdalio_set_default_grid(list(extent = c(-1, 1, -1, 1) * 1e6, 
+                             dimension = c(1024, 1024), 
+                             projection = "+proj=laea +lon_0=139 +lat_0=39"))
+x <- gdalio_graphics(u)
+plot(x)
+```
+
+<img src="man/figures/README-twitter-1.png" width="100%" />
 
 ## Default grid (there is one)
 

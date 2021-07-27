@@ -260,6 +260,19 @@ plot(arr)
 par("usr")
 ```
 
+Another great example off twitter. 
+
+```{r twitter}
+u <- "WMS:https://tiles.maps.eox.at/?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=s2cloudless-2019&SRS=EPSG:4326&BBOX=-180.000000,-90.000000,180.000000,90.000000&FORMAT=image/png&TILESIZE=256&OVERVIEWCOUNT=17&MINRESOLUTION=0.0000053644180298&TILED=true"
+
+library(gdalio) ## https://github.com/hypertidy/gdalio
+gdalio_set_default_grid(list(extent = c(-1, 1, -1, 1) * 1e6, 
+                             dimension = c(1024, 1024), 
+                             projection = "+proj=laea +lon_0=139 +lat_0=39"))
+x <- gdalio_graphics(u)
+plot(x)
+```
+
 
 ## Default grid (there is one)
 
