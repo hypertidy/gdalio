@@ -274,11 +274,13 @@ plot(x)
 ```
 
 
-## Default grid (there is one)
+## Default grid (a downsampled version of your raster source)
 
 
-Say we don't set a grid at all, just go a default. Currently gdalio has a default for an entire world longlat grid. 
-This means we can read from any source and we'll get something (though we might not see anything if the source is a tiny region). 
+Say we don't set a grid at all, just go a default. Currently gdalio has a default that is the entire extent 
+of the source, but downsampled to *about* a limit for the shorter side. 
+. 
+This means we can read from any source and we'll get something (though, it might take some time like a minute or two from rasters tens or hundreds of thousands of pixels per side if it doesn't contain overviews). 
 
 
 ```{r default}

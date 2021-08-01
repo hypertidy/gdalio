@@ -35,8 +35,13 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
   list(extent = c(-180, 180, -90, 90),
        dimension = c(180, 90),
        projection = "+proj=longlat +datum=WGS84")
+  list(extent = - 1L, ## NATIVE
+       dimension = 0, ## DEFAULT
+       projection = "<native>")
 }
-
+.is_native <- function(x) {
+  length(x[["extent"]]) < 4 && x[["extent"]] == -1 && x$dimension == 0 && x$projection == "<native>"
+}
 .valid_check_grid <- function(x) {
   if (isS4(x) && inherits(x, "BasicRaster")) {
     ## we have a {raster}
@@ -60,6 +65,9 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     dimension <- c(d[[1]]$to -  d[[1]]$from + 1, d[[2]]$to -  d[[2]]$from  + 1)
     crs <- d[[1]]$refsys[["wkt"]]
     x <- list(extent = ex, dimension = dimension, projection = crs)
+  }
+  if (.is_native(x)) {
+    return(x)
   }
   has_extent <- is.numeric(x[["extent"]]) && length(x[["extent"]] == 4) && all(!is.na(x[["extent"]])) &&
     diff(x[["extent"]][1:2]) > 0 && diff(x[["extent"]][3:4]) > 0
@@ -96,9 +104,12 @@ gdalio_set_default_grid <- function(x) {
   options(gdalio.default.grid = x)
 }
 
-#' Title
+#' Get default grid
+#'
+#' Can be used to *set* the default grid if the current one is a dummy (WIP)
 #'
 #' @return grid specification (list of extent, dimension, projection)
+#' @param dsn optional, a gdal data source string, will be used to specify the default grid if only a placeholder exists
 #' @export
 #'
 #' @examples
@@ -108,6 +119,32 @@ gdalio_set_default_grid <- function(x) {
 #' gdalio_get_default_grid()
 #'
 #' gdalio_set_default_grid()
-gdalio_get_default_grid <- function() {
-  getOption("gdalio.default.grid")
+gdalio_get_default_grid <- function(dsn = NULL) {
+  g <- getOption("gdalio.default.grid")
+  if (.is_native(g)) {
+    if (is.null(dsn)) {
+      #message("default grid is <native> (unspecified)")
+    } else {
+      raster_info <- vapour::vapour_raster_info(dsn)
+      ## base of the raster_info
+      dimension <- raster_info$dimXY
+      maxd <- max(dimension)
+      projection <- raster_info$projection
+      vrtproj <- .vrt_projection(dsn)
+      if (inherits(dsn, "vrt_simple") && !is.null(vrtproj)) projection <- vrtproj
+      if (any (dimension > 1024)) dimension <- dimension %/% ceiling(maxd/1024)
+      if (length(raster_info$overviews) > 1) {
+        mm_ov <- matrix(raster_info$overviews, ncol = 2, byrow = TRUE)
+        idx <- which.min(abs(1024 - apply(mm_ov, 1, max)))
+        if (is.na(idx) || length(idx) < 1 || idx < 1) idx <- dim(mm_ov)[1L]
+        dimension <- mm_ov[idx, ]
+      }
+      g <- list(extent = raster_info$extent,
+                dimension =  dimension,
+                projection = projection)
+    }
+    ## do we want to set the default grid now?
+    gdalio_set_default_grid(g)
+  }
+  g
 }

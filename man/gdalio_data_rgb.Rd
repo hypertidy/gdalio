@@ -7,7 +7,14 @@
 \usage{
 gdalio_data_rgb(dsn, ..., bands = 1:3)
 
-gdalio_data_hex(dsn, bands = 1:3, max_col_value = 255, ...)
+gdalio_data_hex(
+  dsn,
+  bands = 1:3,
+  max_col_value = 255,
+  ...,
+  col = NULL,
+  breaks = NULL
+)
 }
 \arguments{
 \item{dsn}{character string, raster source understood by GDAL}
@@ -17,6 +24,10 @@ gdalio_data_hex(dsn, bands = 1:3, max_col_value = 255, ...)
 \item{bands}{bands to read, assumes 1:3 (can be 1:4 or any ordering)}
 
 \item{max_col_value}{max value for colour range, usually it's Byte values 255 (but might be 0,1 as in R's graphics)}
+
+\item{col}{optional colour values to set for a data raster (like 'image()' see \code{\link[palr:image_pal]{palr::image_pal()}})}
+
+\item{breaks}{optional interval values to set for a data raster (like 'image()' see 'col')}
 }
 \value{
 'gdalio_data_rgb()' a list of numeric vectors, 'gdalio_data_hex()' a character vector of "#" colours

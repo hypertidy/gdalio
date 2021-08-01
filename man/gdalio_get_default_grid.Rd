@@ -2,15 +2,18 @@
 % Please edit documentation in R/default_grid.R
 \name{gdalio_get_default_grid}
 \alias{gdalio_get_default_grid}
-\title{Title}
+\title{Get default grid}
 \usage{
-gdalio_get_default_grid()
+gdalio_get_default_grid(dsn = NULL)
+}
+\arguments{
+\item{dsn}{optional, a gdal data source string, will be used to specify the default grid if only a placeholder exists}
 }
 \value{
 grid specification (list of extent, dimension, projection)
 }
 \description{
-Title
+Can be used to \emph{set} the default grid if the current one is a dummy (WIP)
 }
 \examples{
 gdalio_get_default_grid()
