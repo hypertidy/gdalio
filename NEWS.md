@@ -1,5 +1,8 @@
 # gdalio dev
 
+* New functions `gdalio_eg_raster()` and `gdalio_eg_image()` to give paths to a single band data raster and a 4 band
+ image raster respectively. 
+ 
 * Included `gdalio_matrix()`, `gdalio_array()`, and `gdalio_graphics()` as exported functions. 
 
 * New function `gdalio_format_source()` prints the required code to run to load functions for stars, terra, raster, spatstat objects. 
