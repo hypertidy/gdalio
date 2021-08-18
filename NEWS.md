@@ -1,5 +1,7 @@
 # gdalio dev
 
+* Now dependent on vapour >= 0.7.7. 
+
 * New functions `gdalio_eg_raster()` and `gdalio_eg_image()` to give paths to a single band data raster and a 4 band
  image raster respectively. 
  

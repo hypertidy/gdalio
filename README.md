@@ -178,7 +178,7 @@ image form.
 ## {spatstat.geom}
 gdalio_im <- function(dsn, ...) {
   v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
+  g <- gdalio_get_default_grid(dsn)
   ## can we have a list of im?
   if (length(v) > 1) message("only returning one image layer im, for now")
   m <- matrix(v[[1]], g$dimension[1])
@@ -188,7 +188,7 @@ gdalio_im <- function(dsn, ...) {
 gdalio_raster <-
 function(dsn, ...) {
   v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
+  g <- gdalio_get_default_grid(dsn)
   r <- raster::raster(raster::extent(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) {
     r <- raster::brick(replicate(length(v), r, simplify = FALSE))
@@ -198,7 +198,7 @@ function(dsn, ...) {
 ## {terra}
 gdalio_terra <- function(dsn, ...) {
   v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
+  g <- gdalio_get_default_grid(dsn)
   r <- terra::rast(terra::ext(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) terra::nlyr(r) <- length(v)
   terra::setValues(r, do.call(cbind, v))
@@ -206,7 +206,7 @@ gdalio_terra <- function(dsn, ...) {
 ## {stars}
 gdalio_stars <- function(dsn, ...) {
   v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid()
+  g <- gdalio_get_default_grid(dsn)
   aa <- array(unlist(v, use.names = FALSE), c(g$dimension[1], g$dimension[2], length(v)))#[,g$dimension[2]:1, , drop = FALSE]
   if (length(v) == 1) aa <- aa[,,1, drop = TRUE]
   r <- stars::st_as_stars(sf::st_bbox(c(xmin = g$extent[1], ymin = g$extent[3], xmax = g$extent[2], ymax = g$extent[4])),
@@ -352,12 +352,14 @@ plot(x)
 
 <img src="man/figures/README-twitter-1.png" width="100%" />
 
-## Default grid (there is one)
+## Default grid (a downsampled version of your raster source)
 
 Say we don’t set a grid at all, just go a default. Currently gdalio has
-a default for an entire world longlat grid. This means we can read from
-any source and we’ll get something (though we might not see anything if
-the source is a tiny region).
+a default that is the entire extent of the source, but downsampled to
+*about* a limit for the shorter side. . This means we can read from any
+source and we’ll get something (though, it might take some time like a
+minute or two from rasters tens or hundreds of thousands of pixels per
+side if it doesn’t contain overviews).
 
 ``` r
 gdalio_set_default_grid()
