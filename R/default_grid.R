@@ -61,6 +61,13 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     crs <- d[[1]]$refsys[["wkt"]]
     x <- list(extent = ex, dimension = dimension, projection = crs)
   }
+  if (inherits(x, "wk_grd_rct")) {
+    rct <- unclass(x$bbox[1])
+    ex <- c(rct$xmin, rct$xmax, rct$ymin, rct$ymax)
+    crs <- attr(rct, "crs")
+    dimension <- dim(x$data)[1:2]
+    x <- list(extent = ex, dimension= dimension, projection = crs)
+  }
   has_extent <- is.numeric(x[["extent"]]) && length(x[["extent"]] == 4) && all(!is.na(x[["extent"]])) &&
     diff(x[["extent"]][1:2]) > 0 && diff(x[["extent"]][3:4]) > 0
   if (!has_extent) stop("invalid extent")
