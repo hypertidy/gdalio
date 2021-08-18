@@ -52,7 +52,7 @@ options(repos = c(
     hypertidy = 'https://hypertidy.r-universe.dev',
     CRAN = 'https://cloud.r-project.org'))
 
-# Install some packages
+# Install the packages
 install.packages(c('vapour', 'gdalio'))
 ```
 
