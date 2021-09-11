@@ -53,13 +53,12 @@ gdalio_data.default <- function(dsn, ..., bands = 1L) {
 #' @param dsn character string, raster source understood by GDAL
 #' @param ... arguments passed to 'vapour::vapour_warp_raster'
 #' @param bands bands to read, assumes 1:3 (can be 1:4 or any ordering)
-#' @param max_col_value max value for colour range, usually it's Byte values 255 (but might be 0,1 as in R's graphics)
 #'
 #' @return 'gdalio_data_rgb()' a list of integer vectors, 'gdalio_data_hex()' a character vector of "#" colours
 #' @export
 #' @name gdalio_data_rgb
 #' @export
-gdalio_data_rgb <- function(dsn, ..., bands = 1:3) {
+gdalio_data_rgb <- function(dsn, bands = 1:3, ...) {
  gdalio_data(dsn, bands = bands, band_output_type = "Int32", ...)
 }
 
@@ -74,7 +73,7 @@ gdalio_data_hex <- function(dsn, bands = 1:3, ...) {
 
 #' @name gdalio_data
 #' @export
-gdalio_graphics <- function(dsn, ..., bands = 1:3) {
+gdalio_graphics <- function(dsn, bands = 1:3, ... ) {
   v <- gdalio_data(dsn, bands = bands, band_output_type = "Byte", ...)
   g <- gdalio_get_default_grid()
   dm <- c(g$dimension, length(v))
@@ -105,13 +104,6 @@ gdalio_array <- function(dsn, ...) {
 
 
 
-.convert_list_bands_hex <- function(v, max_col_value = 255) {
-  if (length(v) == 3) {
-    out <- grDevices::rgb(v[[1]], v[[2]], v[[3]], maxColorValue = max_col_value)
-  } else {
-    out <- grDevices::rgb(v[[1]], v[[2]], v[[3]], v[[4]], maxColorValue = max_col_value)
-  }
-}
 #' Print the code to source format-specific functions
 #'
 #' You can run the code displayed by this function to define package-specific formats for the gdalio data.

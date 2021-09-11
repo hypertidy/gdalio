@@ -1,11 +1,19 @@
 # gdalio dev
 
-* New functions `gdalio_eg_raster()` and `gdalio_eg_image()` to give paths to a single band data raster and a 4 band
- image raster respectively. 
+* Read functions `_graphics()` now request Byte type and `_data_rgb()` Int32
+direct from GDAL. Other reader `_data()` gets what the native type has unless
+`band_output_type` is provided (passed down to {vapour} to read from GDAL one of
+Byte, Int32, or Float64 (the native type can be specified but is translated to
+one of those 3 currently).
+
+
+* New functions `gdalio_eg_raster()` and `gdalio_eg_image()` to give paths to a
+single band data raster and a 4 band image raster respectively.
  
 * Included `gdalio_matrix()`, `gdalio_array()`, and `gdalio_graphics()` as exported functions. 
 
-* New function `gdalio_format_source()` prints the required code to run to load functions for stars, terra, raster, spatstat objects. 
+* New function `gdalio_format_source()` prints the required code to run to load
+functions for stars, terra, raster, spatstat objects.
 
 * Added support for raster, terra, stars objects to `gdalio_set_default_grid()`. 
 

@@ -5,18 +5,16 @@
 \alias{gdalio_data_hex}
 \title{Read GDAL raster data as RGB triples or hex colours}
 \usage{
-gdalio_data_rgb(dsn, ..., bands = 1:3)
+gdalio_data_rgb(dsn, bands = 1:3, ...)
 
 gdalio_data_hex(dsn, bands = 1:3, ...)
 }
 \arguments{
 \item{dsn}{character string, raster source understood by GDAL}
 
-\item{...}{arguments passed to 'vapour::vapour_warp_raster'}
-
 \item{bands}{bands to read, assumes 1:3 (can be 1:4 or any ordering)}
 
-\item{max_col_value}{max value for colour range, usually it's Byte values 255 (but might be 0,1 as in R's graphics)}
+\item{...}{arguments passed to 'vapour::vapour_warp_raster'}
 }
 \value{
 'gdalio_data_rgb()' a list of integer vectors, 'gdalio_data_hex()' a character vector of "#" colours

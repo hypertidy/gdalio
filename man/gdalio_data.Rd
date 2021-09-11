@@ -7,7 +7,7 @@
 \alias{gdalio_array}
 \title{Read GDAL raster numeric data}
 \usage{
-gdalio_graphics(dsn, ..., bands = 1:3)
+gdalio_graphics(dsn, bands = 1:3, ...)
 
 gdalio_matrix(dsn, ...)
 
@@ -15,7 +15,7 @@ gdalio_array(dsn, ...)
 
 gdalio_data(dsn, ..., bands = 1L)
 
-gdalio_graphics(dsn, ..., bands = 1:3)
+gdalio_graphics(dsn, bands = 1:3, ...)
 
 gdalio_matrix(dsn, ...)
 
@@ -24,9 +24,9 @@ gdalio_array(dsn, ...)
 \arguments{
 \item{dsn}{character string, raster source understood by GDAL}
 
-\item{...}{arguments passed to 'vapour::vapour_warp_raster'}
-
 \item{bands}{default 1L, but can be more, duplicated in different order, or 'NULL' for all}
+
+\item{...}{arguments passed to 'vapour::vapour_warp_raster'}
 }
 \value{
 list of numeric vectors
