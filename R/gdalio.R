@@ -42,7 +42,7 @@ gdalio_data.vrt_simple <- function(dsn, ..., bands = 1L) {
 #' @importFrom vapour vapour_warp_raster
 gdalio_data.default <- function(dsn, ..., bands = 1L) {
   g <- gdalio_get_default_grid()
-  vapour::vapour_warp_raster(dsn, extent = g$extent, dimension = g$dimension, wkt = g$projection, bands = bands,  ...)
+  vapour::vapour_warp_raster(dsn, extent = g$extent, dimension = g$dimension, projection = g$projection, bands = bands,  ...)
  }
 
 #' Read GDAL raster data as RGB triples or hex colours
@@ -55,35 +55,39 @@ gdalio_data.default <- function(dsn, ..., bands = 1L) {
 #' @param bands bands to read, assumes 1:3 (can be 1:4 or any ordering)
 #' @param max_col_value max value for colour range, usually it's Byte values 255 (but might be 0,1 as in R's graphics)
 #'
-#' @return 'gdalio_data_rgb()' a list of numeric vectors, 'gdalio_data_hex()' a character vector of "#" colours
+#' @return 'gdalio_data_rgb()' a list of integer vectors, 'gdalio_data_hex()' a character vector of "#" colours
 #' @export
 #' @name gdalio_data_rgb
 #' @export
 gdalio_data_rgb <- function(dsn, ..., bands = 1:3) {
- gdalio_data(dsn, bands = bands, ...)
+ gdalio_data(dsn, bands = bands, band_output_type = "Int32", ...)
 }
 
 #' @name gdalio_data_rgb
 #' @importFrom grDevices rgb
 #' @export
-gdalio_data_hex <- function(dsn, bands = 1:3, max_col_value = 255, ...) {
-  v <- gdalio_data(dsn, bands = bands, ...)
-  if (length(v) < 3 ) stop("did not obtain 3 bands from data source")
-  if (length(v) > 4 ) {
-    message("obtained more than 4 bands from data source, ignoring all but first 4")
-    v <- v[1:4]
-  }
-  .convert_list_bands_hex(v, max_col_value = max_col_value)
+gdalio_data_hex <- function(dsn, bands = 1:3, ..., max_col_value = NULL) {
+  if (!is.null(max_col_value)) message("max_col_value is deprecated, ignored")
+  v <- gdalio_graphics(dsn, bands = bands, ...)
+  as.vector(v)
 }
 
 
 #' @name gdalio_data
 #' @export
 gdalio_graphics <- function(dsn, ..., bands = 1:3) {
-  hex <- gdalio_data_hex(dsn, bands = bands, ...)
+  v <- gdalio_data(dsn, bands = bands, band_output_type = "Byte", ...)
   g <- gdalio_get_default_grid()
-  grDevices::as.raster(t(matrix(hex, g$dimension[1])))
+  dm <- c(g$dimension, length(v))
+  ap <- c(2, 1, 3)
+  if (length(v) == 1L) {
+    dm <- dm[1:2]
+    ap <- ap[1:2]
+  }
+  a <- aperm(array(do.call(c, v), dm) , ap)
+  grDevices::as.raster(a)
 }
+
 #' @name gdalio_data
 #' @export
 gdalio_matrix <- function(dsn, ...) {

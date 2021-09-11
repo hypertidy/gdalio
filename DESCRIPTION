@@ -1,6 +1,6 @@
 Package: gdalio
 Title: Read Data to via GDAL Warper to an Assumed Grid
-Version: 0.0.1.9008
+Version: 0.0.1.9009
 Authors@R: 
     person(given = "Michael D.",
            family = "Sumner",
@@ -22,7 +22,7 @@ RoxygenNote: 7.1.1
 Imports: 
     grDevices,
     methods,
-    vapour (>= 0.7.5.9003)
+    vapour (> 0.8.0)
 URL: https://github.com/hypertidy/gdalio
 BugReports: https://github.com/hypertidy/gdalio/issues
 Remotes: hypertidy/vapour
