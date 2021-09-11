@@ -66,8 +66,7 @@ gdalio_data_rgb <- function(dsn, ..., bands = 1:3) {
 #' @name gdalio_data_rgb
 #' @importFrom grDevices rgb
 #' @export
-gdalio_data_hex <- function(dsn, bands = 1:3, ..., max_col_value = NULL) {
-  if (!is.null(max_col_value)) message("max_col_value is deprecated, ignored")
+gdalio_data_hex <- function(dsn, bands = 1:3, ...) {
   v <- gdalio_graphics(dsn, bands = bands, ...)
   as.vector(v)
 }
