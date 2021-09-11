@@ -7,7 +7,7 @@
 \usage{
 gdalio_data_rgb(dsn, ..., bands = 1:3)
 
-gdalio_data_hex(dsn, bands = 1:3, max_col_value = 255, ...)
+gdalio_data_hex(dsn, bands = 1:3, ...)
 }
 \arguments{
 \item{dsn}{character string, raster source understood by GDAL}
@@ -19,7 +19,7 @@ gdalio_data_hex(dsn, bands = 1:3, max_col_value = 255, ...)
 \item{max_col_value}{max value for colour range, usually it's Byte values 255 (but might be 0,1 as in R's graphics)}
 }
 \value{
-'gdalio_data_rgb()' a list of numeric vectors, 'gdalio_data_hex()' a character vector of "#" colours
+'gdalio_data_rgb()' a list of integer vectors, 'gdalio_data_hex()' a character vector of "#" colours
 }
 \description{
 \code{gdalio_data_hex} and \code{gdalio_data_rgb} are a little strange in that they return a

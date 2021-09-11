@@ -92,7 +92,6 @@ gdalio_graphics <- function(dsn, ..., bands = 1:3) {
 gdalio_matrix <- function(dsn, ...) {
   v <- gdalio_data(dsn, ...)
   g <- gdalio_get_default_grid()
-
   matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1, drop = FALSE]
 }
 #' @name gdalio_data

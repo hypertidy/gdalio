@@ -41,14 +41,15 @@ drawio_data <- function(dsn, ...) {
 
 #' @export
 #' @importFrom vapour vapour_read_extent vapour_layer_info
+#' @importFrom stats approxfun
 drawio_data.default <- function(dsn, ...) {
   g <- gdalio_get_default_grid()
   extents <- do.call(rbind, vapour::vapour_read_extent(dsn, ...))
   x <- as.vector(rbind(extents[,1], extents[,1], extents[,2], extents[,2], extents[,1], NA))
   y <- as.vector(rbind(extents[,3], extents[,4], extents[,4], extents[,3], extents[,3], NA))
   ## this isnt' right still but it'll do
-  xx <- approxfun(seq_along(x), x, na.rm = FALSE)(seq(1, length(x), length.out = 24 * length(x)))
-  yy <- approxfun(seq_along(y), y, na.rm = FALSE)(seq(1, length(y), length.out = 24 * length(y)))
+  xx <- stats::approxfun(seq_along(x), x, na.rm = FALSE)(seq(1, length(x), length.out = 24 * length(x)))
+  yy <- stats::approxfun(seq_along(y), y, na.rm = FALSE)(seq(1, length(y), length.out = 24 * length(y)))
   #plot(xx, yy, type = "b")
   ## https://stat.ethz.ch/pipermail/r-help/2010-April/237031.html
   splitna <- function( x ){
