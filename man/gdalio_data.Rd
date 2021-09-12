@@ -50,7 +50,7 @@ We can write helpers to plot this thing better but WIP atm.
  g <- list(extent = c(130, 160, -60, -30), dimension = c(180, 100),
     projection = "+proj=longlat")
  gdalio_set_default_grid(g)
- v <- gdalio_data(f)
+ v <- gdalio_data(f, band_output_type = "int")
  image(seq(130, 160, length.out = 181), seq(-60, -30, length.out = 101),
     matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1], asp = 1.5)
 }
