@@ -18,6 +18,7 @@ Encoding: UTF-8
 Language: es
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+LazyData: yes
 Imports: 
     grDevices,
     methods,
@@ -27,3 +28,5 @@ BugReports: https://github.com/hypertidy/gdalio/issues
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
