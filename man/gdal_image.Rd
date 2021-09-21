@@ -28,10 +28,11 @@ Title
 gdalio_set_default_grid(list(extent = c(-1, 1, -1, 1) * 500,
 dimension = dev.size("px") * c(1, 1)/2,
 projection = "+proj=laea +lon_0=153.02 +lat_0=-27.47"))
-par(mfrow = c(2, 2))
+op <- par(mfrow = c(2, 2), mar = rep(0, 4))
 plot(gdal_map())
 plot(gdal_raster())
 plot(gdal_image())
 plot(gdal_map(VirtualEarthStreet))
+par(op)
 #gdal_raster_data()
 }

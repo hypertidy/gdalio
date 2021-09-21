@@ -42,7 +42,14 @@ gdalio_data.vrt_simple <- function(dsn, ..., bands = 1L) {
 #' @importFrom vapour vapour_warp_raster
 gdalio_data.default <- function(dsn, ..., bands = 1L) {
   g <- gdalio_get_default_grid()
-  vapour::vapour_warp_raster(dsn, extent = g$extent, dimension = g$dimension, projection = g$projection, bands = bands,  ...)
+  if (utils::packageVersion("vapour") <= "0.8.0") {
+    ## catch this old case, it keeps confusing me ...
+   out <-  vapour::vapour_warp_raster(dsn, extent = g$extent, dimension = g$dimension, wkt = g$projection, bands = bands,  ...)
+
+  } else {
+    out <- vapour::vapour_warp_raster(dsn, extent = g$extent, dimension = g$dimension, projection = g$projection, bands = bands,  ...)
+  }
+  out
  }
 
 #' Read GDAL raster data as RGB triples or hex colours
