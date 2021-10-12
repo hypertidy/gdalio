@@ -61,7 +61,7 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     crs <- d[[1]]$refsys[["wkt"]]
     x <- list(extent = ex, dimension = dimension, projection = crs)
   }
-  if (inherits(x, "wk_grd_rct")) {
+  if (inherits(x, "grd_rct")) {
     rct <- unclass(x$bbox[1])
     ex <- c(rct$xmin, rct$xmax, rct$ymin, rct$ymax)
     crs <- attr(rct, "crs")
