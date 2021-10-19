@@ -1,6 +1,19 @@
 ## this code is sourced and displayed by knitr chunk read in the README.Rmd, and users can source it via
 ## source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))
 
+## ---- gdalio_grd
+## {grd}
+gdalio_grd <- function(dsn, bands = 1, ...) {
+  v <- gdalio_data(dsn, bands = bands,  ...)
+  g <- gdalio_get_default_grid()
+  nb <- length(v)
+  a <- array(unlist(v, use.names = FALSE), c(g$dimension, if(nb > 1) {nb} else {NULL}))
+  a <- aperm(a, c(2, 1, if(nb > 1) {3} else {NULL}))
+  grd::grd_rct(a,
+          bbox = grd::rct(g$extent[1], g$extent[3], g$extent[2], g$extent[4], crs = g$projection))
+}
+
+
 ## ---- gdalio_im
 ## {spatstat.geom}
 gdalio_im <- function(dsn, ..., band_output_type = "numeric") {
