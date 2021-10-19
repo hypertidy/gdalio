@@ -3,8 +3,8 @@
 
 ## ---- gdalio_im
 ## {spatstat.geom}
-gdalio_im <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+gdalio_im <- function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = "band_output_type")
   g <- gdalio_get_default_grid()
   ## can we have a list of im?
   if (length(v) > 1) message("only returning one image layer im, for now")
@@ -16,8 +16,8 @@ gdalio_im <- function(dsn, ...) {
 ## ---- gdalio_raster
 ## {raster}
 gdalio_raster <-
-function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = "band_output_type")
   g <- gdalio_get_default_grid()
   r <- raster::raster(raster::extent(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) {
@@ -29,8 +29,8 @@ function(dsn, ...) {
 
 ## ---- gdalio_terra
 ## {terra}
-gdalio_terra <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+gdalio_terra <- function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = "band_output_type")
   g <- gdalio_get_default_grid()
   r <- terra::rast(terra::ext(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) terra::nlyr(r) <- length(v)
@@ -40,8 +40,8 @@ gdalio_terra <- function(dsn, ...) {
 
 ## ---- gdalio_stars
 ## {stars}
-gdalio_stars <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+gdalio_stars <- function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = "band_output_type")
   g <- gdalio_get_default_grid()
   aa <- array(unlist(v, use.names = FALSE), c(g$dimension[1], g$dimension[2], length(v)))#[,g$dimension[2]:1, , drop = FALSE]
   if (length(v) == 1) aa <- aa[,,1, drop = TRUE]
