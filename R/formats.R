@@ -22,6 +22,21 @@ gdalio_array <- function(dsn, ...) {
   array(v[[1]], c(g$dimension, length(v)))[,g$dimension[2]:1, , drop = FALSE]
 }
 
+.gdalio_grid_coords_cent <- function() {
+   g <- gdalio_get_default_grid()
+   res <- c(diff(g$extent[1:2])/g$dimension[1L], diff(g$extent[3:4])/g$dimension[2L])
+   xs <- seq(g$extent[1L] + res[1L]/2, g$extent[2L] - res[1L]/2, length.out = g$dimension[1L])
+   ## top to bottom
+   ys <- seq(g$extent[4L] - res[2L]/2, g$extent[3L] + res[2L]/2, length.out = g$dimension[2L])
+   cbind(x = xs, y = rep(ys, each = length(xs)))
+}
+#' @name gdalio_xyz
+#' @export
+gdalio_xyz <- function(dsn, ...) {
+  v <- gdalio_data(dsn, ...)
+  cbind(.gdalio_grid_coords_cent(), do.call(cbind, v))
+}
+
 #' Example data files
 #'
 #' Return a path to a data raster file, for easy access to examples.
