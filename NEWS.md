@@ -1,5 +1,6 @@
 # gdalio dev
 
+* The default grid may now be initialized from a character string (i.e. a file path, url or vrt string). 
 * New format, image list 'xyz' format (vector '$x', vector '$y', matrix '$z' using `image()` format). 
 
 * New format, matrix xyz with `gdalio_xyz()` the x, y coordinates in columns and then 1 or more bands. 

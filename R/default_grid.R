@@ -68,6 +68,15 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     dimension <- dim(x$data)[1:2]
     x <- list(extent = ex, dimension= dimension, projection = crs)
   }
+
+   if (is.character(x)) {
+    tst <- try(vapour::vapour_raster_info(x))
+    if (!inherits(tst, "try-error")) {
+      tst$dimension <- tst$dimXY
+      x <- tst[c("extent", "dimension", "projection")]
+    }
+  }
+
   has_extent <- is.numeric(x[["extent"]]) && length(x[["extent"]] == 4) && all(!is.na(x[["extent"]])) &&
     diff(x[["extent"]][1:2]) > 0 && diff(x[["extent"]][3:4]) > 0
   if (!has_extent) stop("invalid extent")
