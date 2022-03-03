@@ -1,0 +1,194 @@
+---
+title: "examples-microsoft"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{examples-microsoft}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(eval = FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+We working through this example notebook: 
+
+https://planetarycomputer.microsoft.com/dataset/landsat-8-c2-l2#Example-Notebook
+
+```{r setup}
+library(gdalio)
+```
+
+
+```{r aoi}
+
+ext <- c(-122.27508544921875, -121.96128845214844, 47.54687159892238, 47.745787772920934)
+
+time_of_interest <- "2020-01-01/2020-12-31"
+#remotes::install_github("brazil-data-cube/rstac")
+library(rstac)
+## Access the "mobi" collection:
+catalog <- stac("https://planetarycomputer.microsoft.com/api/stac/v1")
+
+x <- catalog %>% 
+  stac_search(collections = "landsat-8-c2-l2", 
+              bbox  = ext[c(1, 3, 2, 4)], 
+              datetime = time_of_interest) %>%
+  ext_query("eo:cloud_cover" < "10") %>% 
+  post_request() %>% 
+   items_sign(sign_fn = sign_planetary_computer())
+
+
+
+
+## looking for 'Choosing LC08_L2SP_046027_20200908_02_T1 from 2020-09-08 with 0.19% cloud cover'
+tifs <- grep("tif$", purrr::map_chr(x$features[[1]]$assets, \(xx) xx$href), value = TRUE, ignore.case = TRUE)
+  
+tif0 <- grep("LC08_L2SP_046027_20200908_.*T1", tifs, value = TRUE)
+  #items_sign(sign_fn = sign_planetary_computer()) 
+
+
+library(gdalio)
+gdalio_set_default_grid(list(extent = ext, dimension = c(512, 512), projection = "OGC:CRS84"))
+m <- gdalio_matrix(sprintf("/vsicurl/%s", tif0[1]))
+
+
+
+```
+
+random landsat example from Carl
+
+``{r landsat0}
+s_obj <- stac("https://planetarycomputer.microsoft.com/api/stac/v1/")
+
+it_obj <- s_obj %>% 
+  stac_search(collections = "landsat-8-c2-l2",
+              bbox = c(-47.02148, -17.35063, -42.53906, -12.98314)) %>%
+  post_request() %>%
+  items_sign(sign_fn = sign_planetary_computer())
+
+
+url <- paste0("/vsicurl/", it_obj$features[[1]]$assets$SR_B2$href)
+data <- terra::rast(url) ## lazy-read ~ 100 MB file over the network, no disk storage
+data
+```
+
+MOBI
+
+```{r mobi}
+library(rstac)
+it_obj <- stac("https://planetarycomputer.microsoft.com/api/stac/v1") %>%
+  stac_search(collections = "mobi") %>%
+  get_request() %>%
+  items_fetch() %>% #  meta for all items, not just first 10
+  items_sign(sign_fn = sign_planetary_computer()) # API key
+
+
+s_obj <- stac("https://planetarycomputer.microsoft.com/api/stac/v1/")
+
+it_obj <- s_obj %>% 
+  stac_search(collections = "landsat-8-c2-l2",
+              bbox = c(-47.02148, -17.35063, -42.53906, -12.98314)) %>%
+  get_request() %>%
+  items_sign(sign_fn = sign_planetary_computer())
+
+
+url <- paste0("/vsicurl/", it_obj$features[[1]]$assets$SR_B2$href)
+data <- terra::rast(url) ## lazy-read ~ 100 MB file over the network, no disk storage
+data
+
+
+```
+
+
+Sentinel 2
+
+```{r sentinel}
+##https://planetarycomputer.microsoft.com/dataset/sentinel-2-l2a#Example-Notebook
+
+ext <-  c(-148.56536865234375, -147.44338989257812, 
+         60.80072385643073, 61.18363894915102)
+time_of_interest <- "2019-06-01/2019-08-01"
+
+catalog = Client.open("https://planetarycomputer.microsoft.com/api/stac/v1")
+
+#search = catalog.search(
+#    collections=["sentinel-2-l2a"],
+#    intersects=area_of_interest,
+#    datetime=time_of_interest,
+#    query={"eo:cloud_cover": {"lt": 10}},
+#)
+#catalog <- stac("https://planetarycomputer.microsoft.com/api/stac/v1")
+
+catalog %>%  stac_search(
+    collections="sentinel-2-l2a", bbox=ext[c(1, 3, 2, 4)], datetime=range_old
+)       
+```
+
+
+
+NAIP
+
+```{r naip}
+
+## goal, convert this python notebook to R
+#https://planetarycomputer.microsoft.com/dataset/naip#Example-Notebook
+## discussion ongoing of Michael Sumner and Carl Boettiger
+
+ext <- c(-111.9839859008789, -111.90502166748045, 40.5389819819361, 40.57015381856105)
+
+range_old = "2010-01-01/2013-01-01"
+range_new = "2018-01-01/2020-01-01"
+library(rstac)
+## Access the "mobi" collection:
+catalog <- stac("https://planetarycomputer.microsoft.com/api/stac/v1")
+
+search_old <- catalog %>%  stac_search(
+    collections="naip", bbox=ext[c(1, 3, 2, 4)], datetime=range_old
+)
+search_new = catalog %>% stac_search(
+    collections="naip", bbox  = ext[c(1, 3, 2, 4)], datetime=range_new
+)
+
+item_old <- search_old %>% get_request()
+item_new <- search_new %>% get_request()
+## we can use a longlat grid like they do in the notebook (guessing at dim here ...)
+#gdalio_set_default_grid(list(extent = ext, dimension = c(512, 512), projection = "OGC:CRS84"))
+
+## or, we can get the actual grid spec and use it (but use a lower res overview - there are 5 levels in total, 
+## $dimXY and then 4 more in $overviews)
+url_old <- sprintf("/vsicurl/%s", item_old$features[[1]]$assets$image$href)
+url_new <- sprintf("/vsicurl/%s", item_new$features[[1]]$assets$image$href)
+
+## these can be slow, sometimes it takes a while
+## we just getting 'raster info', like gdalinfo output
+## (it makes our reprex very slow ... but sometimes it's fast ...)
+ri_old <- vapour::vapour_raster_info(url_old) 
+ri_new <- vapour::vapour_raster_info(url_new)
+
+
+## new and old are entirely different, but the warper doesn't care we'll read both to match the second
+## lowest overview of old
+library(gdalio)
+gdalio_set_default_grid(list(extent = ri_old$extent, 
+                             dimension = tail(ri_old$overviews, 4)[1:2], 
+                             projection = ri_old$projection))
+
+## load code for terra etc formats
+source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))
+## we may get obscure terra error/warnings but that's 'normal'
+image_old <- gdalio_terra(url_old, bands = 1:3)
+image_new <- gdalio_terra(url_new, bands = 1:3)
+op <- par(mfrow = c(1, 2))
+library(terra)
+
+plotRGB(image_old)
+plotRGB(image_new)
+par(op)
+
+```

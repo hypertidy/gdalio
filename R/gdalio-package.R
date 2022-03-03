@@ -12,3 +12,12 @@ NULL
 #' @name sources-data
 #' @docType data
 NULL
+
+
+#' Deprecated Functions
+#'
+#' These functions are Deprecated in this release of gdaio, they will be removed
+#' in a future version.
+#' @name gdalio-deprecated
+#' @keywords internal
+NULL

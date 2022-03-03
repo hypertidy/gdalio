@@ -87,10 +87,4 @@ as.character.vrt_simple <- function(x, ...) {
 #' @importFrom methods setOldClass
 setOldClass(c("vrt", "character"))
 
-#' Deprecated Functions
-#'
-#' These functions are Deprecated in this release of gdaio, they will be removed
-#' in a future version.
-#' @name gdalio-deprecated
-#' @keywords internal
-NULL
+

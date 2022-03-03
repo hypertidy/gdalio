@@ -6,13 +6,7 @@
 \alias{gdalio-package}
 \title{gdalio: Read Data to via GDAL Warper to an Assumed Grid}
 \description{
-Convenience wrapper for the GDAL raster warper library. Set a default context grid, an extent, 
- dimension, projection, and then read any GDAL raster source into that grid. There are controls to augment
- metadata-poor sources (to override missing or incorrect extent or projection metadata), to set a desired grid
- for subsequent use, and ability to control options available by the GDAL warp library itself. This can be 
- used to easily read data from any kind of raster data source, local files, online servers, bare URLs, and database
- connections. Data is read in generic form but we provide example wrappers for commonly used formats for raster
- data.
+Convenience wrapper for the GDAL raster warper library. Set a default context grid, an extent, dimension, projection, and then read any GDAL raster source into that grid. There are controls to augment metadata-poor sources (to override missing or incorrect extent or projection metadata), to set a desired grid for subsequent use, and ability to control options available by the GDAL warp library itself. This can be used to easily read data from any kind of raster data source, local files, online servers, bare URLs, and database connections. Data is read in generic form but we provide example wrappers for commonly used formats for raster data.
 }
 \seealso{
 Useful links:

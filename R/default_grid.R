@@ -71,11 +71,15 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
   has_extent <- is.numeric(x[["extent"]]) && length(x[["extent"]] == 4) && all(!is.na(x[["extent"]])) &&
     diff(x[["extent"]][1:2]) > 0 && diff(x[["extent"]][3:4]) > 0
   if (!has_extent) stop("invalid extent")
-  has_dim <- is.numeric(x[["dimension"]]) && length(x[["dimension"]] == 2) && all(!is.na(x[["dimension"]])) && all(x[["dim"]] > 0)
+  if ("dimXY" %in% names(x)) {
+    x[["dimension"]] <- x[["dimXY"]]
+  }
+  has_dim <- is.numeric(x[["dimension"]]) && length(x[["dimension"]]) ==2  && all(!is.na(x[["dimension"]])) && all(x[["dim"]] > 0)
   if (!has_dim) stop("invalid dimension")
-  has_proj <- is.character(x[["projection"]]) && length(x[["projection"]] == 1) && !is.na(x[["projection"]])
+
+  has_proj <- is.character(x[["projection"]]) && length(x[["projection"]]) == 1 && nchar(x[["projection"]]) > 0 && !is.na(x[["projection"]])
   if (!has_proj) stop("invalid projection")
-  x
+  x[c("extent", "dimension", "projection")]
 }
 
 #' Title
