@@ -22,13 +22,26 @@ gdalio_array <- function(dsn, ...) {
   array(v[[1]], c(g$dimension, length(v)))[,g$dimension[2]:1, , drop = FALSE]
 }
 
-.gdalio_grid_coords_cent <- function() {
+#' @name gdalio_data
+#' @export
+gdalio_image <- function(dsn, ...) {
+  out <- .gdalio_grid_coords_cent_xy()
+  out$y <- rev(out$y)
+  out$z <- gdalio_matrix(dsn, ...)
+  out
+}
+.gdalio_grid_coords_cent_xy <- function() {
    g <- gdalio_get_default_grid()
    res <- c(diff(g$extent[1:2])/g$dimension[1L], diff(g$extent[3:4])/g$dimension[2L])
    xs <- seq(g$extent[1L] + res[1L]/2, g$extent[2L] - res[1L]/2, length.out = g$dimension[1L])
    ## top to bottom
    ys <- seq(g$extent[4L] - res[2L]/2, g$extent[3L] + res[2L]/2, length.out = g$dimension[2L])
-   cbind(x = xs, y = rep(ys, each = length(xs)))
+  list(x = xs, y = ys)
+}
+.gdalio_grid_coords_cent <- function() {
+  xy <- .gdalio_grid_coords_cent_xy()
+  xs <- xy$x
+  cbind(x = xs, y = rep(ys, each = length(xs)))
 }
 #' @name gdalio_xyz
 #' @export

@@ -1,5 +1,7 @@
 # gdalio dev
 
+* New format, image list 'xyz' format (vector '$x', vector '$y', matrix '$z' using `image()` format). 
+
 * New format, matrix xyz with `gdalio_xyz()` the x, y coordinates in columns and then 1 or more bands. 
 
 * Read functions `_graphics()` now request Byte type and `_data_rgb()` Int32

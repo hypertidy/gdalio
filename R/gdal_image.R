@@ -22,7 +22,7 @@ eqc <- function(x) {
 #' @param dsn
 #'
 #' @return
-#' @export
+#' @NoRd
 #' @examples
 #' gdalio_set_default_grid(list(extent = c(-1, 1, -1, 1) * 500,
 #' dimension = dev.size("px") * c(1, 1)/2,
@@ -34,30 +34,30 @@ eqc <- function(x) {
 #' plot(gdal_map(VirtualEarthStreet))
 #' par(op)
 #' #gdal_raster_data()
-gdal_image <- function(dsn = VirtualEarthSatellite) {
-  g <- gdalio_get_default_grid()
-  as.raster(matrix(gdalio_data_hex(dsn, bands = 1:3, resample = "cubic"), g$dimension[2L], byrow = TRUE))
-}
-#' @name gdal_image
-#' @export
-gdal_raster <- function(dsn = AWSElevation) {
-  g <- gdalio_get_default_grid()
-  dd <- gdalio_data(dsn, resample = "cubic")[[1L]]
-  dd[dd < 0] <- 0
-  as.raster(scl(matrix(dd, g$dimension[2L], byrow = TRUE)))
-}
-#' @name gdal_image
-#' @export
-gdal_map <- function(dsn = OSMMap) {
-  g <- gdalio_get_default_grid()
-  as.raster(matrix(gdalio_data_hex(dsn, bands = 1:3, resample = "cubic"), g$dimension[2L], byrow = TRUE))
-}
-#' @name gdal_image
-#' @export
-gdal_raster_data <- function(dsn = AWSElevation) {
-  g <- gdalio_get_default_grid()
-  matrix(gdalio_data(dsn, resample = "cubic")[[1L]], g$dimension[2L], byrow = TRUE)
-}
+#' gdal_image <- function(dsn = VirtualEarthSatellite) {
+#'   g <- gdalio_get_default_grid()
+#'   as.raster(matrix(gdalio_data_hex(dsn, bands = 1:3, resample = "cubic"), g$dimension[2L], byrow = TRUE))
+#' }
+#' #' @name gdal_image
+#' #' @export
+#' gdal_raster <- function(dsn = AWSElevation) {
+#'   g <- gdalio_get_default_grid()
+#'   dd <- gdalio_data(dsn, resample = "cubic")[[1L]]
+#'   dd[dd < 0] <- 0
+#'   as.raster(scl(matrix(dd, g$dimension[2L], byrow = TRUE)))
+#' }
+#' #' @name gdal_image
+#' #' @export
+#' gdal_map <- function(dsn = OSMMap) {
+#'   g <- gdalio_get_default_grid()
+#'   as.raster(matrix(gdalio_data_hex(dsn, bands = 1:3, resample = "cubic"), g$dimension[2L], byrow = TRUE))
+#' }
+#' #' @name gdal_image
+#' #' @export
+#' gdal_raster_data <- function(dsn = AWSElevation) {
+#'   g <- gdalio_get_default_grid()
+#'   matrix(gdalio_data(dsn, resample = "cubic")[[1L]], g$dimension[2L], byrow = TRUE)
+#' }
 
 
 

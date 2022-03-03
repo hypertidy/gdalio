@@ -5,6 +5,7 @@
 \alias{gdalio_graphics}
 \alias{gdalio_matrix}
 \alias{gdalio_array}
+\alias{gdalio_image}
 \title{Read GDAL raster numeric data}
 \usage{
 gdalio_graphics(dsn, bands = 1:3, ...)
@@ -12,6 +13,8 @@ gdalio_graphics(dsn, bands = 1:3, ...)
 gdalio_matrix(dsn, ...)
 
 gdalio_array(dsn, ...)
+
+gdalio_image(dsn, ...)
 
 gdalio_data(dsn, ..., bands = 1L)
 
