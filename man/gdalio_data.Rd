@@ -14,7 +14,7 @@ gdalio_matrix(dsn, ...)
 
 gdalio_array(dsn, ...)
 
-gdalio_image(dsn, ...)
+gdalio_image(dsn, ..., extent = NULL, dimension = NULL, projection = NULL)
 
 gdalio_data(dsn, ..., bands = 1L)
 

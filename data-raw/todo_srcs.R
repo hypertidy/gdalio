@@ -11,9 +11,11 @@ dsn <- tibble::tribble(
 
 purrr::walk(purrr::transpose(dsn), ~assign(.x$name, .x$dsn, , envir = .GlobalEnv))
 
+
 usethis::use_data(VirtualEarthSatellite)
 usethis::use_data(VirtualEarthStreet)
 usethis::use_data(AWSElevation)
 usethis::use_data(OSMMap)
 
-
+GEBCO2019 <- "/vsicurl/https://public.services.aad.gov.au/datasets/science/GEBCO_2019_GEOTIFF/GEBCO_2019.tif"
+usethis::use_data(GEBCO2019)

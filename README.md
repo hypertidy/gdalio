@@ -32,7 +32,7 @@ library:
     reformat the data into commonly used R types for images
 
 -   `gdalio_data_hex()`, `gdalio_data_rgb()` special cases of
-    gdalio\_data() to read 3 or 4 bands, convert to text hex codes
+    gdalio_data() to read 3 or 4 bands, convert to text hex codes
 
 -   `gdalio_local_grid()` a helper to create a local projected region
     around a longlat (optional width extent, dimension, projection
@@ -52,13 +52,10 @@ package, terra package).
 You can install gdalio with:
 
 ``` r
-# Enable this universe
-options(repos = c(
-    hypertidy = 'https://hypertidy.r-universe.dev',
-    CRAN = 'https://cloud.r-project.org'))
-
-# Install some packages
-install.packages(c('vapour', 'gdalio'))
+#install.packages("remotes")
+## currently need this branch to avoid dev problems in vapour
+remotes::install_github("hypertidy/vapour@stable-2022")
+remotes::install_github("hypertidy/gdalio")
 ```
 
 ## Target grid specification
@@ -176,8 +173,8 @@ image form.
 
 ``` r
 ## {spatstat.geom}
-gdalio_im <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+gdalio_im <- function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = band_output_type)
   g <- gdalio_get_default_grid()
   ## can we have a list of im?
   if (length(v) > 1) message("only returning one image layer im, for now")
@@ -186,8 +183,8 @@ gdalio_im <- function(dsn, ...) {
 }
 ## {raster}
 gdalio_raster <-
-function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = band_output_type)
   g <- gdalio_get_default_grid()
   r <- raster::raster(raster::extent(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) {
@@ -196,16 +193,16 @@ function(dsn, ...) {
   raster::setValues(r, do.call(cbind, v))
 }
 ## {terra}
-gdalio_terra <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+gdalio_terra <- function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = band_output_type)
   g <- gdalio_get_default_grid()
   r <- terra::rast(terra::ext(g$extent), nrows = g$dimension[2], ncols = g$dimension[1], crs = g$projection)
   if (length(v) > 1) terra::nlyr(r) <- length(v)
   terra::setValues(r, do.call(cbind, v))
 }
 ## {stars}
-gdalio_stars <- function(dsn, ...) {
-  v <- gdalio_data(dsn, ...)
+gdalio_stars <- function(dsn, ..., band_output_type = "numeric") {
+  v <- gdalio_data(dsn, ..., band_output_type  = band_output_type)
   g <- gdalio_get_default_grid()
   aa <- array(unlist(v, use.names = FALSE), c(g$dimension[1], g$dimension[2], length(v)))#[,g$dimension[2]:1, , drop = FALSE]
   if (length(v) == 1) aa <- aa[,,1, drop = TRUE]
@@ -240,6 +237,13 @@ you get the idea).
 op <- par(mfrow = c(2, 2))
 #plot(matrix(g$extent, ncol = 2), type = "n", asp = 1, xlab = "x", ylab = "y", main = "stars")
 image(gdalio_stars(f), main = "stars")
+#> Registered S3 methods overwritten by 'stars':
+#>   method             from
+#>   st_bbox.SpatExtent sf  
+#>   st_bbox.SpatRaster sf  
+#>   st_bbox.SpatVector sf  
+#>   st_crs.SpatRaster  sf  
+#>   st_crs.SpatVector  sf
 raster::plot(gdalio_raster(f), col = hcl.colors(26), main = "raster")
 terra::plot(gdalio_terra(f), main = "terra")
 plot(gdalio_im(f), main = "\nspatstat")
@@ -411,8 +415,7 @@ s <- gdalio_stars(elevation.tiles.prod)
 library(stars); plot(s)
 #> Loading required package: abind
 #> Loading required package: sf
-#> Linking to GEOS 3.9.0, GDAL 3.2.1, PROJ 7.2.1
-#> downsample set to c(1,1)
+#> Linking to GEOS 3.10.1, GDAL 3.4.0, PROJ 8.2.0; sf_use_s2() is TRUE
 ```
 
 <img src="man/figures/README-example-data-1.png" width="100%" />
@@ -443,9 +446,6 @@ gdalio_set_default_grid(list(extent = c(-1, 1, -1, 1) * 7e6,
                              projection = omerc))
 
 o <- gdalio_raster(elevation.tiles.prod)
-#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj
-#> = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4
-#> definition
 raster::plot(o, col = hcl.colors(52))
 xy <- reproj::reproj(raster::coordinates(o), "+proj=longlat", source = raster::projection(o))
 xy[xy[,1] < 0, 1] <- xy[xy[,1] < 0, 1] + 360
@@ -465,9 +465,6 @@ single resolution. GDAL doesn’t care! Let’s make them the same:
 
 ``` r
 sst <- gdalio_raster(f)
-#> Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj
-#> = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4
-#> definition
 raster::plot(sst, col = palr::sst_pal(26))
 contour(setValues(o, xy[,1]), add = TRUE, col = "white")
 contour(setValues(o, xy[,2]), add = TRUE, col = "white")

@@ -4,13 +4,19 @@
 \alias{gdalio_set_default_grid}
 \title{Title}
 \usage{
-gdalio_set_default_grid(x)
+gdalio_set_default_grid(
+  x,
+  ...,
+  extent = NULL,
+  dimension = NULL,
+  projection = NULL
+)
 }
 \arguments{
 \item{x}{grid specification, a list with '$extent, $dimension, $projection` or a spatial grid object see Details}
 }
 \value{
-nothing, used to set a default grid available globally
+the grid specification (originally: nothing, used to set a default grid available globally)
 }
 \description{
 Input may be a list with \code{extent} \verb{$dimension}, \verb{$projection}, which is \code{c(xmin, xmax, ymin, ymax)},

@@ -1,33 +1,31 @@
 #' @name gdalio_data
 #' @export
-gdalio_graphics <- function(dsn, ..., bands = 1:3) {
+gdalio_graphics <- function(dsn, ..., bands = 1:3, extent = NULL, dimension = NULL, projection = NULL) {
   hex <- gdalio_data_hex(dsn, bands = bands, ...)
-  g <- gdalio_get_default_grid(dsn)
+  g <- .handle_args(gdalio_get_default_grid(dsn), extent, dimension, projection)
   grDevices::as.raster(t(matrix(hex, g$dimension[1])))
 }
 #' @name gdalio_data
 #' @export
-gdalio_matrix <- function(dsn, ...) {
+gdalio_matrix <- function(dsn, ..., bands = 1L, extent = NULL, dimension = NULL, projection = NULL) {
   v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid(dsn)
-
-  matrix(v[[1]], g$dimension[1])[,g$dimension[2]:1, drop = FALSE]
+  g <- .handle_args(gdalio_get_default_grid(dsn), extent, dimension, projection)
+  matrix(v[[bands[1L]]], g$dimension[1])[,g$dimension[2]:1, drop = FALSE]
 }
 #' @name gdalio_data
 #' @export
-gdalio_array <- function(dsn, ...) {
+gdalio_array <- function(dsn, ..., extent = NULL, dimension = NULL, projection = NULL) {
   v <- gdalio_data(dsn, ...)
-  g <- gdalio_get_default_grid(dsn)
-
+  g <- .handle_args(gdalio_get_default_grid(dsn), extent, dimension, projection)
   array(v[[1]], c(g$dimension, length(v)))[,g$dimension[2]:1, , drop = FALSE]
 }
 
 #' @name gdalio_data
 #' @export
-gdalio_image <- function(dsn, ...) {
+gdalio_image <- function(dsn, ..., extent = NULL, dimension = NULL, projection = NULL) {
   out <- .gdalio_grid_coords_cent_xy()
   out$y <- rev(out$y)
-  out$z <- gdalio_matrix(dsn, ...)
+  out$z <- gdalio_matrix(dsn, ..., extent, dimension, projection)
   out
 }
 .gdalio_grid_coords_cent_xy <- function() {

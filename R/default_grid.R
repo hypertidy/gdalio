@@ -31,13 +31,14 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
 }
 
 
-.gdalio_default_grid <- function() {
-  list(extent = c(-180, 180, -90, 90),
-       dimension = c(180, 90),
-       projection = "+proj=longlat +datum=WGS84")
+.gdalio_default_grid <- function(extent, dimension, projection) {
+  out <- list(extent = if (is.null(extent)) c(-180, 180, -90, 90) else extent,
+       dimension = if (is.null(dimension)) c(180, 90) else dimension,
+       projection = if (is.null(projection)) "OGC:CRS84" else projection)
+ .valid_check_grid(out)
 }
 
-.valid_check_grid <- function(x) {
+.valid_check_grid <- function(x, extent = NULL, dimension = NULL, projection = NULL) {
   if (isS4(x) && inherits(x, "BasicRaster")) {
     ## we have a {raster}
     x <- list(extent = c(x@extent@xmin, x@extent@xmax, x@extent@ymin, x@extent@ymax),
@@ -77,6 +78,8 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     }
   }
 
+  ### handle any overrids
+  x <- .handle_args(x, extent, dimension, projection)
   has_extent <- is.numeric(x[["extent"]]) && length(x[["extent"]] == 4) && all(!is.na(x[["extent"]])) &&
     diff(x[["extent"]][1:2]) > 0 && diff(x[["extent"]][3:4]) > 0
   if (!has_extent) stop("invalid extent")
@@ -91,6 +94,14 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
   x[c("extent", "dimension", "projection")]
 }
 
+.handle_args <- function(x, extent = NULL, dimension = NULL, projection = NULL) {
+  if (is.null(x)) x <- list()
+  if (!is.null(extent)) x$extent <- extent
+  if (!is.null(dimension)) x$dimension <- dimension
+  if (!is.null(projection)) x$projection <- projection
+x
+
+}
 #' Title
 #'
 #' Input may be a list with `extent` `$dimension`, `$projection`, which is `c(xmin, xmax, ymin, ymax)`,
@@ -100,20 +111,21 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
 #'
 #' @param x grid specification, a list with '$extent, $dimension, $projection` or a spatial grid object see Details
 #'
-#' @return nothing, used to set a default grid available globally
+#' @return the grid specification (originally: nothing, used to set a default grid available globally)
 #' @export
 #'
 #' @examples
 #' gdalio_set_default_grid(list(extent = c(-1000, 1000, -2000, 2000),
 #'    dimension = c(100, 200), projection = "+proj=longlat"))
 #' gdalio_set_default_grid()
-gdalio_set_default_grid <- function(x) {
+gdalio_set_default_grid <- function(x, ..., extent = NULL, dimension = NULL, projection = NULL) {
   if (missing(x)) {
-    x <- .gdalio_default_grid()
+    x <- .gdalio_default_grid(extent, dimension, projection)
   } else {
-    x <- .valid_check_grid(x)
+    x <- .valid_check_grid(x, extent, dimension, projection)
   }
   options(gdalio.default.grid = x)
+  invisible(x)
 }
 
 #' Title

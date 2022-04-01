@@ -46,7 +46,14 @@ In this readme we illustrate the use of these from some online and local raster 
 
 You can install gdalio  with:
 
-``` r
+```r
+#install.packages("remotes")
+## currently need this branch to avoid dev problems in vapour
+remotes::install_github("hypertidy/vapour@stable-2022")
+remotes::install_github("hypertidy/gdalio")
+```
+
+```{r, include = FALSE,eval=F}
 # Enable this universe
 options(repos = c(
     hypertidy = 'https://hypertidy.r-universe.dev',
