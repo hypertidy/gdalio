@@ -19,7 +19,7 @@ a raster, stars, or terra object. Only simple cases of stars will work (regular 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">gdalio</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.9011</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.9012</span>
       </span>
     </div>
 
@@ -67,7 +67,13 @@ a raster, stars, or terra object. Only simple cases of stars will work (regular 
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gdalio_set_default_grid</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gdalio_set_default_grid</span><span class="op">(</span>
+  <span class="va">x</span>,
+  <span class="va">...</span>,
+  extent <span class="op">=</span> <span class="cn">NULL</span>,
+  dimension <span class="op">=</span> <span class="cn">NULL</span>,
+  projection <span class="op">=</span> <span class="cn">NULL</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -77,7 +83,7 @@ a raster, stars, or terra object. Only simple cases of stars will work (regular 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>nothing, used to set a default grid available globally</p>
+    <p>the grid specification (originally: nothing, used to set a default grid available globally)</p>
     </div>
 
     <div id="ref-examples">

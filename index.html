@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">gdalio</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.9011</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.9012</span>
       </span>
     </div>
 
@@ -106,13 +106,10 @@
 </h2>
 <p>You can install gdalio with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Enable this universe</span>
-<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-    hypertidy <span class="op">=</span> <span class="st">'https://hypertidy.r-universe.dev'</span>,
-    CRAN <span class="op">=</span> <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># Install some packages</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'vapour'</span>, <span class="st">'gdalio'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="co">#install.packages("remotes")</span>
+<span class="co">## currently need this branch to avoid dev problems in vapour</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"hypertidy/vapour@stable-2022"</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"hypertidy/gdalio"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="target-grid-specification">Target grid specification<a class="anchor" aria-label="anchor" href="#target-grid-specification"></a>
@@ -184,8 +181,8 @@
 <p>There are functions <code><a href="reference/gdalio_data.html">gdalio_matrix()</a></code>, <code><a href="reference/gdalio_data.html">gdalio_array()</a></code>, and <code><a href="reference/gdalio_data.html">gdalio_graphics()</a></code> in this package that put the data into the native R image form.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## {spatstat.geom}</span>
-<span class="va">gdalio_im</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span>
+<span class="va">gdalio_im</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, <span class="va">band_output_type</span> <span class="op">=</span> <span class="st">"numeric"</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, band_output_type  <span class="op">=</span> <span class="va">band_output_type</span><span class="op">)</span>
   <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_get_default_grid.html">gdalio_get_default_grid</a></span><span class="op">(</span><span class="op">)</span>
   <span class="co">## can we have a list of im?</span>
   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"only returning one image layer im, for now"</span><span class="op">)</span>
@@ -194,8 +191,8 @@
 <span class="op">}</span>
 <span class="co">## {raster}</span>
 <span class="va">gdalio_raster</span> <span class="op">&lt;-</span>
-<span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span>
+<span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, <span class="va">band_output_type</span> <span class="op">=</span> <span class="st">"numeric"</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, band_output_type  <span class="op">=</span> <span class="va">band_output_type</span><span class="op">)</span>
   <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_get_default_grid.html">gdalio_get_default_grid</a></span><span class="op">(</span><span class="op">)</span>
   <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu">raster</span><span class="op">(</span><span class="fu">raster</span><span class="fu">::</span><span class="fu">extent</span><span class="op">(</span><span class="va">g</span><span class="op">$</span><span class="va">extent</span><span class="op">)</span>, nrows <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">dimension</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, ncols <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">dimension</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, crs <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">projection</span><span class="op">)</span>
   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
@@ -204,16 +201,16 @@
   <span class="fu">raster</span><span class="fu">::</span><span class="fu">setValues</span><span class="op">(</span><span class="va">r</span>, <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">cbind</span>, <span class="va">v</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="co">## {terra}</span>
-<span class="va">gdalio_terra</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span>
+<span class="va">gdalio_terra</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, <span class="va">band_output_type</span> <span class="op">=</span> <span class="st">"numeric"</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, band_output_type  <span class="op">=</span> <span class="va">band_output_type</span><span class="op">)</span>
   <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_get_default_grid.html">gdalio_get_default_grid</a></span><span class="op">(</span><span class="op">)</span>
   <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu">rast</span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu">ext</span><span class="op">(</span><span class="va">g</span><span class="op">$</span><span class="va">extent</span><span class="op">)</span>, nrows <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">dimension</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, ncols <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">dimension</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, crs <span class="op">=</span> <span class="va">g</span><span class="op">$</span><span class="va">projection</span><span class="op">)</span>
   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu">nlyr</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>
   <span class="fu">terra</span><span class="fu">::</span><span class="fu">setValues</span><span class="op">(</span><span class="va">r</span>, <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">cbind</span>, <span class="va">v</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span>
 <span class="co">## {stars}</span>
-<span class="va">gdalio_stars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span><span class="op">)</span>
+<span class="va">gdalio_stars</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, <span class="va">band_output_type</span> <span class="op">=</span> <span class="st">"numeric"</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_data.html">gdalio_data</a></span><span class="op">(</span><span class="va">dsn</span>, <span class="va">...</span>, band_output_type  <span class="op">=</span> <span class="va">band_output_type</span><span class="op">)</span>
   <span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/gdalio_get_default_grid.html">gdalio_get_default_grid</a></span><span class="op">(</span><span class="op">)</span>
   <span class="va">aa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">v</span>, use.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">g</span><span class="op">$</span><span class="va">dimension</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">g</span><span class="op">$</span><span class="va">dimension</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="co">#[,g$dimension[2]:1, , drop = FALSE]</span>
   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="va">aa</span> <span class="op">&lt;-</span> <span class="va">aa</span><span class="op">[</span>,,<span class="fl">1</span>, drop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">]</span>
@@ -233,6 +230,13 @@
 <code class="sourceCode R"><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#plot(matrix(g$extent, ncol = 2), type = "n", asp = 1, xlab = "x", ylab = "y", main = "stars")</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="fu">gdalio_stars</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"stars"</span><span class="op">)</span>
+<span class="co">#&gt; Registered S3 methods overwritten by 'stars':</span>
+<span class="co">#&gt;   method             from</span>
+<span class="co">#&gt;   st_bbox.SpatExtent sf  </span>
+<span class="co">#&gt;   st_bbox.SpatRaster sf  </span>
+<span class="co">#&gt;   st_bbox.SpatVector sf  </span>
+<span class="co">#&gt;   st_crs.SpatRaster  sf  </span>
+<span class="co">#&gt;   st_crs.SpatVector  sf</span>
 <span class="fu">raster</span><span class="fu">::</span><span class="fu">plot</span><span class="op">(</span><span class="fu">gdalio_raster</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">26</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"raster"</span><span class="op">)</span>
 <span class="fu">terra</span><span class="fu">::</span><span class="fu">plot</span><span class="op">(</span><span class="fu">gdalio_terra</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">gdalio_im</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"\nspatstat"</span><span class="op">)</span></code></pre></div>
@@ -363,8 +367,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/stars/" class="external-link">stars</a></span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: abind</span>
 <span class="co">#&gt; Loading required package: sf</span>
-<span class="co">#&gt; Linking to GEOS 3.9.0, GDAL 3.2.1, PROJ 7.2.1</span>
-<span class="co">#&gt; downsample set to c(1,1)</span></code></pre></div>
+<span class="co">#&gt; Linking to GEOS 3.10.1, GDAL 3.4.0, PROJ 8.2.0; sf_use_s2() is TRUE</span></code></pre></div>
 <p><img src="reference/figures/README-example-data-1.png" width="100%"></p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
@@ -385,9 +388,6 @@
                              projection <span class="op">=</span> <span class="va">omerc</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">o</span> <span class="op">&lt;-</span> <span class="fu">gdalio_raster</span><span class="op">(</span><span class="va">elevation.tiles.prod</span><span class="op">)</span>
-<span class="co">#&gt; Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj</span>
-<span class="co">#&gt; = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4</span>
-<span class="co">#&gt; definition</span>
 <span class="fu">raster</span><span class="fu">::</span><span class="fu">plot</span><span class="op">(</span><span class="va">o</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">52</span><span class="op">)</span><span class="op">)</span>
 <span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu">reproj</span><span class="fu">::</span><span class="fu">reproj</span><span class="op">(</span><span class="fu">raster</span><span class="fu">::</span><span class="fu">coordinates</span><span class="op">(</span><span class="va">o</span><span class="op">)</span>, <span class="st">"+proj=longlat"</span>, source <span class="op">=</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu">projection</span><span class="op">(</span><span class="va">o</span><span class="op">)</span><span class="op">)</span>
 <span class="va">xy</span><span class="op">[</span><span class="va">xy</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">xy</span><span class="op">[</span><span class="va">xy</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">360</span>
@@ -399,9 +399,6 @@
 <p>The fun part is I can now change the source, I’ve already set up the map I want and I can simply ask for a new set of pixels. The topography data happens to be in Mercator from a tiled and level of detail image service, while the SST is from a model output format (NetCDF) at a single resolution. GDAL doesn’t care! Let’s make them the same:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sst</span> <span class="op">&lt;-</span> <span class="fu">gdalio_raster</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>
-<span class="co">#&gt; Warning in showSRID(uprojargs, format = "PROJ", multiline = "NO", prefer_proj</span>
-<span class="co">#&gt; = prefer_proj): Discarded datum Unknown based on WGS84 ellipsoid in Proj4</span>
-<span class="co">#&gt; definition</span>
 <span class="fu">raster</span><span class="fu">::</span><span class="fu">plot</span><span class="op">(</span><span class="va">sst</span>, col <span class="op">=</span> <span class="fu">palr</span><span class="fu">::</span><span class="fu">sst_pal</span><span class="op">(</span><span class="fl">26</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="fu">setValues</span><span class="op">(</span><span class="va">o</span>, <span class="va">xy</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/contour.html" class="external-link">contour</a></span><span class="op">(</span><span class="fu">setValues</span><span class="op">(</span><span class="va">o</span>, <span class="va">xy</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span>
