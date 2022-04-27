@@ -21,6 +21,7 @@ RoxygenNote: 7.1.2
 LazyData: yes
 Imports: 
     grDevices,
+    memoise,
     methods,
     vapour (>= 0.8.0)
 URL: https://github.com/hypertidy/gdalio
