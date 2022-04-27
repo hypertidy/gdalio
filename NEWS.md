@@ -1,5 +1,11 @@
 # gdalio dev
 
+o BREAKING CHANGE
+
+* `gdalio_format_source()` now just returns the file path, you can do `source(gdalio_format_source())`. 
+
+o CHANGES
+
 * The default grid may now be initialized from a character string (i.e. a file path, url or vrt string). 
 * New format, image list 'xyz' format (vector '$x', vector '$y', matrix '$z' using `image()` format). 
 

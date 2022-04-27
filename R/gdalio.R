@@ -111,14 +111,4 @@ gdalio_array <- function(dsn, ...) {
 
 
 
-#' Print the code to source format-specific functions
-#'
-#' You can run the code displayed by this function to define package-specific formats for the gdalio data.
-#'
-#' Currently running the code displayed by this function will load functions for terra, stars, raster, and spatstat.
-#' @export
-#' @examples
-#' gdalio_format_source()
-gdalio_format_source <- function() {
-  'source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))'
-}
+

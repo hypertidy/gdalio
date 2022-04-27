@@ -70,12 +70,14 @@ gdalio_eg_image <- function() {
 
 #' Print the code to source format-specific functions
 #'
-#' You can run the code displayed by this function to define package-specific formats for the gdalio data.
+#' You can 'source()' the file path displayed by this function to define package-specific formats for the gdalio data.
 #'
-#' Currently running the code displayed by this function will load functions for terra, stars, raster, and spatstat.
+#' Running the code in the file path displayed by this function will load functions for terra, stars, raster, and spatstat.
 #' @export
 #' @examples
-#' gdalio_format_source()
+#' \dontrun{
+#' source(gdalio_format_source())
+#' }
 gdalio_format_source <- function() {
-  'source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))'
+  system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE)
 }
