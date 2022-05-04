@@ -30,7 +30,15 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
   )
 }
 
+.default_dimension <- function(ex = NULL) {
+  rat <- 1
+  if (!is.null(ex)) {
+    rat <- diff(ex[1:2])/diff(ex[3:4])
+  }
 
+  dfd <- c(1024, 1024)
+  sort(c(1/rat, 1), decreasing = TRUE) * dfd
+}
 .gdalio_default_grid <- function(extent, dimension, projection) {
   out <- list(extent = if (is.null(extent)) c(-180, 180, -90, 90) else extent,
        dimension = if (is.null(dimension)) c(180, 90) else dimension,
@@ -58,17 +66,30 @@ gdalio_local_grid <- function(x = 147, y = -42, buffer = 25e5, family = "laea", 
     ## only simple cases will work
     ex <- c(c(d[[1]]$from -1, d[[1]]$to) * d[[1]]$delta + d[[1]]$offset,
             c(d[[2]]$from - 1, d[[2]]$to) * -d[[2]]$delta - d[[2]]$offset)
-    dimension <- c(d[[1]]$to -  d[[1]]$from + 1, d[[2]]$to -  d[[2]]$from  + 1)
+    dim <- c(d[[1]]$to -  d[[1]]$from + 1, d[[2]]$to -  d[[2]]$from  + 1)
     crs <- d[[1]]$refsys[["wkt"]]
-    x <- list(extent = ex, dimension = dimension, projection = crs)
+    x <- list(extent = ex, dimension = dim, projection = crs)
+  }
+  if (inherits(x, "sf")) {
+    ex <- attr(x[[attr(x, "sf_column")]], "bbox")[c("xmin", "xmax", "ymin", "ymax")]
+    crs <- attr(x[[attr(x, "sf_column")]], "crs")$wkt
+    dim <- .default_dimension(ex)
+    x <- list(extent = ex, dimension = dim, projection = crs)
+  }
+  if (inherits(x, "SpatVector")) {
+    ex <- x@ptr$extent()@.xData[["vector"]]
+    crs <- x@ptr$get_crs("wkt")
+    dim <- .default_dimension(ex)
+    x <- list(extent = ex, dimension = dim, projection = crs)
   }
   if (inherits(x, "grd_rct")) {
     rct <- unclass(x$bbox[1])
     ex <- c(rct$xmin, rct$xmax, rct$ymin, rct$ymax)
     crs <- attr(rct, "crs")
-    dimension <- dim(x$data)[1:2]
-    x <- list(extent = ex, dimension= dimension, projection = crs)
+    dim <- dim(x$data)[1:2]
+    x <- list(extent = ex, dimension= dim, projection = crs)
   }
+
 
    if (is.character(x)) {
     tst <- try(vapour::vapour_raster_info(x))

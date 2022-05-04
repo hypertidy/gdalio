@@ -1,5 +1,8 @@
 # gdalio dev
 
+o `set_default_grid()` now works with sf and SpatVector objects, with a (n
+overrideable) default dimension appropriate to the bounding box aspect ratio.
+
 o BREAKING CHANGE
 
 * `gdalio_format_source()` now just returns the file path, you can do `source(gdalio_format_source())`. 
