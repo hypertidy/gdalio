@@ -9,7 +9,11 @@ gdalio_local_grid(
   y = -42,
   buffer = 2500000,
   family = "laea",
-  dim = if (dev.cur() == 1) {     c(512, 512) } else {     dev.size("px") }
+  dim = if (dev.cur() == 1) {
+     c(512, 512)
+ } else {
+     dev.size("px")
+ }
 )
 }
 \arguments{

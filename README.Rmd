@@ -175,7 +175,7 @@ knitr::read_chunk("inst/raster_format/raster_format.codeR")
 To obtain all of those functions you can do, but note the entire dependency requirement includes at least raster, stars, spatstat.geom, terra, so simply use the definitions as needed. 
 
 ```{r source_format-chunks, eval=TRUE}
-writeLines(gdalio_format_source())
+source(gdalio_format_source())
 ```
 
 Note that for each format there is nothing of consequence that is different,

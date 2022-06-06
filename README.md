@@ -38,9 +38,9 @@ library:
     around a longlat (optional width extent, dimension, projection
     family)
 
--   `gdalio_format_source()` a helper to *print out the code you can
-    run* to define formatters for spatial package types (raster, stars,
-    terra, spatstat).
+-   `gdalio_format_source()` a helper to *return the file path* to
+    source code, to define formatters for spatial package types (raster,
+    stars, terra, spatstat).
 
 In this readme we illustrate the use of these from some online and local
 raster data sources, and provide helpers for reading into particular
@@ -219,8 +219,7 @@ dependency requirement includes at least raster, stars, spatstat.geom,
 terra, so simply use the definitions as needed.
 
 ``` r
-writeLines(gdalio_format_source())
-#> source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))
+source(gdalio_format_source())
 ```
 
 Note that for each format there is nothing of consequence that is
@@ -237,13 +236,6 @@ you get the idea).
 op <- par(mfrow = c(2, 2))
 #plot(matrix(g$extent, ncol = 2), type = "n", asp = 1, xlab = "x", ylab = "y", main = "stars")
 image(gdalio_stars(f), main = "stars")
-#> Registered S3 methods overwritten by 'stars':
-#>   method             from
-#>   st_bbox.SpatExtent sf  
-#>   st_bbox.SpatRaster sf  
-#>   st_bbox.SpatVector sf  
-#>   st_crs.SpatRaster  sf  
-#>   st_crs.SpatVector  sf
 raster::plot(gdalio_raster(f), col = hcl.colors(26), main = "raster")
 terra::plot(gdalio_terra(f), main = "terra")
 plot(gdalio_im(f), main = "\nspatstat")

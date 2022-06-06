@@ -36,7 +36,7 @@ gdalio_data.vrt_simple <- function(dsn, ..., bands = 1L) {
   src_extent <- .vrt_extent(dsn)
   if (is.null(src_extent)) src_extent <- 0  ## that's what vapour expects, not NULL
   src_proj <- .vrt_projection(dsn)
-  gdalio_data(unclass(dsn), source_extent = src_extent, source_wkt = src_proj, bands = bands, ...)
+  gdalio_data(unclass(dsn), source_extent = src_extent, source_projection = src_proj, bands = bands, ...)
 }
 #' @export
 #' @importFrom vapour vapour_warp_raster

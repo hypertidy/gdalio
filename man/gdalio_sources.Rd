@@ -6,9 +6,6 @@
 \usage{
 gdalio_sources()
 }
-\value{
-
-}
 \description{
 Provides a data frame of online-accessible data sources. This is very incomplete and has no
 guarantee of success. It's your responsibility to check usage terms.
