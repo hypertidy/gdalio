@@ -68,7 +68,11 @@
   y <span class="op">=</span> <span class="op">-</span><span class="fl">42</span>,
   buffer <span class="op">=</span> <span class="fl">2500000</span>,
   family <span class="op">=</span> <span class="st">"laea"</span>,
-  dim <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.cur</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>     <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">512</span>, <span class="fl">512</span><span class="op">)</span> <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>     <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.size.html" class="external-link">dev.size</a></span><span class="op">(</span><span class="st">"px"</span><span class="op">)</span> <span class="op">}</span>
+  dim <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.cur</a></span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+     <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">512</span>, <span class="fl">512</span><span class="op">)</span>
+ <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+     <span class="fu"><a href="https://rdrr.io/r/grDevices/dev.size.html" class="external-link">dev.size</a></span><span class="op">(</span><span class="st">"px"</span><span class="op">)</span>
+ <span class="op">}</span>
 <span class="op">)</span></code></pre></div>
     </div>
 

@@ -97,7 +97,7 @@
 <li><p><code><a href="reference/gdalio_data.html">gdalio_matrix()</a></code>, <code><a href="reference/gdalio_data.html">gdalio_array()</a></code>, and <code><a href="reference/gdalio_data.html">gdalio_graphics()</a></code> which reformat the data into commonly used R types for images</p></li>
 <li><p><code><a href="reference/gdalio_data_rgb.html">gdalio_data_hex()</a></code>, <code><a href="reference/gdalio_data_rgb.html">gdalio_data_rgb()</a></code> special cases of gdalio_data() to read 3 or 4 bands, convert to text hex codes</p></li>
 <li><p><code><a href="reference/gdalio_local_grid.html">gdalio_local_grid()</a></code> a helper to create a local projected region around a longlat (optional width extent, dimension, projection family)</p></li>
-<li><p><code><a href="reference/gdalio_format_source.html">gdalio_format_source()</a></code> a helper to <em>print out the code you can run</em> to define formatters for spatial package types (raster, stars, terra, spatstat).</p></li>
+<li><p><code><a href="reference/gdalio_format_source.html">gdalio_format_source()</a></code> a helper to <em>return the file path</em> to source code, to define formatters for spatial package types (raster, stars, terra, spatstat).</p></li>
 </ul>
 <p>In this readme we illustrate the use of these from some online and local raster data sources, and provide helpers for reading into particular formats used in R (base matrix, raster package, stars package, spatstat package, terra package).</p>
 <div class="section level2">
@@ -221,21 +221,13 @@
 <span class="op">}</span></code></pre></div>
 <p>To obtain all of those functions you can do, but note the entire dependency requirement includes at least raster, stars, spatstat.geom, terra, so simply use the definitions as needed.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="reference/gdalio_format_source.html">gdalio_format_source</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; source(system.file("raster_format/raster_format.codeR", package = "gdalio", mustWork = TRUE))</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="reference/gdalio_format_source.html">gdalio_format_source</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Note that for each format there is nothing of consequence that is different, from the perspective of gdalio they all take the same set of pixel values, there are just tiny differences in how the extent and projection metadata are handled, and in storage orientation for the data itself.</p>
 <p>To prove the point we now read the same data but into our format of choice. We are <em>re-reading</em> data here (it all exists in <code>pix</code> above, but you get the idea).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#plot(matrix(g$extent, ncol = 2), type = "n", asp = 1, xlab = "x", ylab = "y", main = "stars")</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="fu">gdalio_stars</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"stars"</span><span class="op">)</span>
-<span class="co">#&gt; Registered S3 methods overwritten by 'stars':</span>
-<span class="co">#&gt;   method             from</span>
-<span class="co">#&gt;   st_bbox.SpatExtent sf  </span>
-<span class="co">#&gt;   st_bbox.SpatRaster sf  </span>
-<span class="co">#&gt;   st_bbox.SpatVector sf  </span>
-<span class="co">#&gt;   st_crs.SpatRaster  sf  </span>
-<span class="co">#&gt;   st_crs.SpatVector  sf</span>
 <span class="fu">raster</span><span class="fu">::</span><span class="fu">plot</span><span class="op">(</span><span class="fu">gdalio_raster</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">26</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"raster"</span><span class="op">)</span>
 <span class="fu">terra</span><span class="fu">::</span><span class="fu">plot</span><span class="op">(</span><span class="fu">gdalio_terra</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"terra"</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">gdalio_im</span><span class="op">(</span><span class="va">f</span><span class="op">)</span>, main <span class="op">=</span> <span class="st">"\nspatstat"</span><span class="op">)</span></code></pre></div>

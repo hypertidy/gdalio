@@ -68,10 +68,6 @@ guarantee of success. It's your responsibility to check usage terms.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">gdalio_sources</span><span class="op">(</span><span class="op">)</span></code></pre></div>
     </div>
 
-    <div id="value">
-    <h2>Value</h2>
-    
-    </div>
     <div id="details">
     <h2>Details</h2>
     <p>There is a table of sources 'provider', 'name', 'source' - source is a DSN in GDAL terms, you
@@ -88,9 +84,6 @@ can query and read from it with GDAL.</p>
 <span class="r-in">                             projection <span class="op">=</span> <span class="st">"+proj=laea +lat_0=-42.8826 +lon_0=147.3257"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="gdalio_format_source.html">gdalio_format_source</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">tas_street</span> <span class="op">&lt;-</span> <span class="fu">gdalio_terra</span><span class="op">(</span><span class="va">ttsa</span>, bands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, resample <span class="op">=</span> <span class="st">"cubic"</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> we have a problem at RasterIO</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> we have a problem at RasterIO</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> we have a problem at RasterIO</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘terra’</span>
 <span class="r-in"><span class="va">ve_street</span> <span class="op">&lt;-</span> <span class="fu">gdalio_terra</span><span class="op">(</span><span class="va">ve</span>, bands <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, resample <span class="op">=</span> <span class="st">"cubic"</span><span class="op">)</span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in loadNamespace(x):</span> there is no package called ‘terra’</span>
